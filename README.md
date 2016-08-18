@@ -5,7 +5,7 @@
 gradle依赖
 
 ```
-   compile 'cn.lemon:RefreshRecyclerView:0.1.0'
+   compile 'cn.lemon:RefreshRecyclerView:0.1.1'
 ```
 
 xml布局文件
@@ -130,16 +130,4 @@ RecyclerView使用了ViewHolder，自定义ViewHolder需继承BaseViewHolder<T>,
     compile 'com.android.support:support-annotations:23.4.0'
 ```
 
-<html>
-<body>
-<video width="320" height="570" controls="controls" autoplay="autoplay">
-  <source src="/i/movie.ogg" type="video/ogg" />
-  <source src="/i/movie.mp4" type="video/mp4" />
-  <source src="/i/movie.webm" type="video/webm" />
-  <object data="/i/movie.mp4" width="320" height="570">
-    <embed width="320" height="570" src="demo.mp4" />
-  </object>
-</video>
-
-</body>
-</html>
+![demo](demo.gif)
