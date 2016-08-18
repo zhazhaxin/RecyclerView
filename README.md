@@ -129,7 +129,7 @@ RecyclerView使用了ViewHolder，自定义ViewHolder需继承BaseViewHolder<T>,
     compile 'com.android.support:recyclerview-v7:23.4.0'
     compile 'com.android.support:support-annotations:23.4.0'
 ```
-<!DOCTYPE html>
+
 <html>
 <body>
 <video width="320" height="570" controls="controls" autoplay="autoplay">
