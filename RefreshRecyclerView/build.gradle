@@ -1,0 +1,51 @@
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion 23
+    buildToolsVersion "23.0.3"
+
+    defaultConfig {
+        minSdkVersion 15
+        targetSdkVersion 23
+        versionCode 1
+        versionName "1.0"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    compile 'com.android.support:recyclerview-v7:23.4.0'
+    compile 'com.android.support:support-annotations:23.4.0'
+}
+
+ext {
+    bintrayRepo = 'maven'
+    bintrayName = 'refresh-recycler-view' //bintray上的项目名
+
+    publishedGroupId = 'cn.lemon'
+    artifact = 'RefreshRecyclerView'
+    libraryVersion = '0.1.0'
+
+    siteUrl = 'https://github.com/llxdaxia/RefreshRecyclerView'
+    gitUrl = 'https://github.com/llxdaxia/RefreshRecyclerView.git'
+
+    libraryName = 'RefreshRecyclerView'//项目名字，没什么用
+    libraryDescription = 'A better for RecyclerView'//项目描述，没什么用
+
+    developerId = 'Lemon'
+    developerName = 'Lemon'
+    developerEmail = 'daxiallx@gmail.com'
+
+    licenseName = 'The Apache Software License, Version 2.0'
+    licenseUrl = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+    allLicenses = ["Apache-2.0"]
+}
+
+apply from: 'https://raw.githubusercontent.com/llxdaxia/GradleScript/master/install_v1.gradle'
+apply from: 'https://raw.githubusercontent.com/llxdaxia/GradleScript/master/bintray_v1.gradle'
