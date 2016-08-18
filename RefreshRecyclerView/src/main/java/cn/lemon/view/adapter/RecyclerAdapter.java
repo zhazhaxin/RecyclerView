@@ -111,7 +111,7 @@ public abstract class RecyclerAdapter<T> extends RecyclerView.Adapter<BaseViewHo
             } else if (hasFooter && !hasHeader && position != 0) { //有footer，没有header
                 mLoadMoreView.setVisibility(View.VISIBLE);
             } else if (!hasHeader && !hasFooter) { //mViewCount - 2 == -1不用处理
-
+                mLoadMoreView.setVisibility(View.VISIBLE);
             } else if (hasHeader && hasFooter && position != 1) { //都有
                 mLoadMoreView.setVisibility(View.VISIBLE);
             }

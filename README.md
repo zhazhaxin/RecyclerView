@@ -5,7 +5,7 @@
 gradle依赖
 
 ```
-   compile 'cn.lemon:RefreshRecyclerView:0.1.1'
+   compile 'cn.lemon:RefreshRecyclerView:0.1.2'
 ```
 
 xml布局文件
