@@ -44,20 +44,16 @@ RefreshRecyclerView需要设置一个Adapter。
 Adapter应该继承 RecyclerAdapter<T>，如：
 
 ```java
-   class MyAdapter extends RecyclerAdapter<Consumption>
-```
-
-自定义的Adapter重写两个方法就好了。
-
-```
+class MyAdapter extends RecyclerAdapter<Consumption>{
    public MyAdapter(Context context) {
         super(context);
    }
-        
+
    @Override
    public BaseViewHolder<Consumption> onCreateBaseViewHolder(ViewGroup parent, int viewType) {
         return new MyViewHolder(parent.getContext(), R.layout.item_consume);
    }
+}
 ```
         
 RecyclerView使用了ViewHolder，自定义ViewHolder需继承BaseViewHolder<T>,如：
@@ -112,17 +108,6 @@ RecyclerView使用了ViewHolder，自定义ViewHolder需继承BaseViewHolder<T>,
     }
 ```
 
-开发中可能还会给每个item设置点击事件，在ViewHolder的setData(Object object)方法中设置
-
-```
-  itemView.setOnClickListener(new View.OnClickListener() {
-           @Override
-           public void onClick(View v) {
-                            
-           }
-      });
-```
-
 ### RefreshRecyclerView添加Header或Footer
      
 ```
@@ -138,13 +123,15 @@ RecyclerView使用了ViewHolder，自定义ViewHolder需继承BaseViewHolder<T>,
 
 ### 注意事项
 
-依赖了其他库
+ - 依赖了其他库
 
 ```
     compile 'com.android.support:recyclerview-v7:23.4.0'
     compile 'com.android.support:support-annotations:23.4.0'
 ```
-
+<!DOCTYPE html>
+<html>
+<body>
 <video width="320" height="570" controls="controls" autoplay="autoplay">
   <source src="/i/movie.ogg" type="video/ogg" />
   <source src="/i/movie.mp4" type="video/mp4" />
@@ -153,3 +140,6 @@ RecyclerView使用了ViewHolder，自定义ViewHolder需继承BaseViewHolder<T>,
     <embed width="320" height="570" src="demo.mp4" />
   </object>
 </video>
+
+</body>
+</html>
