@@ -2,7 +2,6 @@ package cn.lemon.recyclerview.ui;
 
 import android.content.Context;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import cn.lemon.recyclerview.R;
@@ -33,14 +32,6 @@ class MyAdapter extends RecyclerAdapter<Consumption> {
 
         public MyViewHolder(ViewGroup parent) {
             super(parent, R.layout.item_consume);
-            itemView.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-            name = (TextView) itemView.findViewById(R.id.name);
-            type = (TextView) itemView.findViewById(R.id.type);
-            consumeNum = (TextView) itemView.findViewById(R.id.consume_num);
-            remainNum = (TextView) itemView.findViewById(R.id.remain_num);
-            consumeAddress = (TextView) itemView.findViewById(R.id.consume_address);
-            time = (TextView) itemView.findViewById(R.id.time);
-
         }
 
         @Override
@@ -52,6 +43,23 @@ class MyAdapter extends RecyclerAdapter<Consumption> {
             remainNum.setText("卡里余额：" + object.getYe());
             consumeAddress.setText(object.getSh());
             time.setText(object.getSj());
+        }
+
+        @Override
+        public void onInitializeView() {
+            super.onInitializeView();
+            name = findViewById(R.id.name);
+            type = findViewById(R.id.type);
+            consumeNum = findViewById(R.id.consume_num);
+            remainNum = findViewById(R.id.remain_num);
+            consumeAddress = findViewById(R.id.consume_address);
+            time = findViewById(R.id.time);
+        }
+
+        @Override
+        public void onItemViewClick(Consumption object) {
+            super.onItemViewClick(object);
+            //点击事件
         }
     }
 }

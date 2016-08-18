@@ -7,9 +7,9 @@ import android.view.View;
 import android.view.ViewGroup;
 
 /**
- * Created by llxal on 2015/12/19.
+ * Created by linlongxin on 2015/12/19.
  */
-public class BaseViewHolder<T> extends RecyclerView.ViewHolder implements View.OnClickListener {
+public class BaseViewHolder<T> extends RecyclerView.ViewHolder{
 
     private final String TAG = "RecyclerView_BaseViewHolder";
 
@@ -20,7 +20,6 @@ public class BaseViewHolder<T> extends RecyclerView.ViewHolder implements View.O
     public BaseViewHolder(ViewGroup parent, int layoutId) {
         super(LayoutInflater.from(parent.getContext()).inflate(layoutId, parent, false));
         onInitializeView();
-        itemView.setOnClickListener(this);
     }
 
     public void onInitializeView() {
@@ -31,16 +30,17 @@ public class BaseViewHolder<T> extends RecyclerView.ViewHolder implements View.O
         return (T) itemView.findViewById(resId);
     }
 
-    public void setData(T object) {
+    public void setData(final T object) {
+        itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onItemViewClick(object);
+            }
+        });
+    }
+
+    public void onItemViewClick(T object) {
 
     }
 
-    public void onItemViewClick() {
-
-    }
-
-    @Override
-    public void onClick(View v) {
-        onItemViewClick();
-    }
 }

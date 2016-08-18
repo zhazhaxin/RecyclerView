@@ -43,6 +43,13 @@ public class MainActivity extends AppCompatActivity {
         textView.setGravity(Gravity.CENTER);
         textView.setText("重庆邮电大学");
         mAdapter.setHeader(textView);
+        //添加footer
+        final TextView footer = new TextView(this);
+        footer.setLayoutParams(new LinearLayoutCompat.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, Utils.dip2px(48)));
+        footer.setTextSize(16);
+        footer.setGravity(Gravity.CENTER);
+        footer.setText("我是Footer");
+        mAdapter.setFooter(footer);
 
         mRecyclerView = (RefreshRecyclerView) findViewById(R.id.recycler_view);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
