@@ -26,8 +26,8 @@ public abstract class RecyclerAdapter<T> extends RecyclerView.Adapter<BaseViewHo
     private static final String TAG = "RecyclerAdapter";
     private static final int HEADER_TYPE = 111;
     private static final int FOOTER_TYPE = 222;
-    private static final int STATUS_TYPE = 333;
-    private int mViewCount = 0;
+    protected static final int STATUS_TYPE = 333;
+    protected int mViewCount = 0;
 
     private boolean hasHeader = false;
     private boolean hasFooter = false;
@@ -36,15 +36,15 @@ public abstract class RecyclerAdapter<T> extends RecyclerView.Adapter<BaseViewHo
     public boolean isShowNoMore = false;//停止加载
     public boolean isLoadEnd = false;
 
-    private Action mLoadMoreAction;
+    protected Action mLoadMoreAction;
 
     private List<T> mData = new ArrayList<>();
 
     private View headerView;
     private View footerView;
-    private View mStatusView;
-    private LinearLayout mLoadMoreView;
-    private TextView mNoMoreView;
+    protected View mStatusView;
+    protected LinearLayout mLoadMoreView;
+    protected TextView mNoMoreView;
 
     private Context mContext;
 
@@ -116,8 +116,9 @@ public abstract class RecyclerAdapter<T> extends RecyclerView.Adapter<BaseViewHo
                 mLoadMoreView.setVisibility(View.VISIBLE);
             }
             isLoadEnd = true;
-            if (mLoadMoreAction != null) {
+            if (mLoadMoreAction != null && !isLoadingMore) {
                 mLoadMoreAction.onAction();
+                isLoadingMore = true;
             }
         }
     }
@@ -125,14 +126,14 @@ public abstract class RecyclerAdapter<T> extends RecyclerView.Adapter<BaseViewHo
     @Override
     public int getItemViewType(int position) {
         log("getItemViewType : " + mViewCount);
-        if (position == mViewCount - 1) { //添加最后的状态view
-            return STATUS_TYPE;
-        }
         if (hasHeader && position == 0) {  //header
             return HEADER_TYPE;
         }
         if (hasFooter && position == mViewCount - 2) { //footer
             return FOOTER_TYPE;
+        }
+        if (position == mViewCount - 1) { //添加最后的状态view
+            return STATUS_TYPE;
         }
         return super.getItemViewType(position);
     }
@@ -145,8 +146,14 @@ public abstract class RecyclerAdapter<T> extends RecyclerView.Adapter<BaseViewHo
 
     public void showNoMore() {
         isShowNoMore = true;
-        mLoadMoreView.setVisibility(View.GONE);
-        mNoMoreView.setVisibility(View.VISIBLE);
+        mLoadMoreView.post(new Runnable() {
+            @Override
+            public void run() {
+                mLoadMoreView.setVisibility(View.GONE);
+                mNoMoreView.setVisibility(View.VISIBLE);
+            }
+        });
+
     }
 
     public void setLoadMoreAction(Action action) {
@@ -155,6 +162,7 @@ public abstract class RecyclerAdapter<T> extends RecyclerView.Adapter<BaseViewHo
 
     public void add(T object) {
         if (!isShowNoMore) {
+            isLoadingMore = false;
             mData.add(object);
             mViewCount++;
         }
@@ -170,6 +178,7 @@ public abstract class RecyclerAdapter<T> extends RecyclerView.Adapter<BaseViewHo
 
     public void addAll(List<T> data) {
         if (!isShowNoMore) {
+            isLoadingMore = false;
             if (data.size() == 0) {
                 return;
             }

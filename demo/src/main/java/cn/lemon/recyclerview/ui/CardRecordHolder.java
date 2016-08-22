@@ -1,27 +1,13 @@
 package cn.lemon.recyclerview.ui;
 
-import android.content.Context;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import cn.lemon.recyclerview.R;
 import cn.lemon.recyclerview.model.bean.Consumption;
 import cn.lemon.view.adapter.BaseViewHolder;
-import cn.lemon.view.adapter.RecyclerAdapter;
 
-
-class MyAdapter extends RecyclerAdapter<Consumption> {
-
-    public MyAdapter(Context context) {
-        super(context);
-    }
-
-    @Override
-    public BaseViewHolder<Consumption> onCreateBaseViewHolder(ViewGroup parent, int viewType) {
-        return new MyViewHolder(parent);
-    }
-
-    class MyViewHolder extends BaseViewHolder<Consumption> {
+class CardRecordHolder extends BaseViewHolder<Consumption> {
 
         private TextView name;
         private TextView type;
@@ -30,7 +16,7 @@ class MyAdapter extends RecyclerAdapter<Consumption> {
         private TextView consumeAddress;
         private TextView time;
 
-        public MyViewHolder(ViewGroup parent) {
+        public CardRecordHolder(ViewGroup parent) {
             super(parent, R.layout.item_consume);
         }
 
@@ -62,4 +48,3 @@ class MyAdapter extends RecyclerAdapter<Consumption> {
             //点击事件
         }
     }
-}
