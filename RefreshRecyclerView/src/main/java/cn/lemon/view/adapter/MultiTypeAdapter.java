@@ -22,7 +22,7 @@ public class MultiTypeAdapter extends RecyclerAdapter {
 
     private final String TAG = "MultiTypeAdapter";
     private List<Object> mViewsData;
-    private Map<Integer, Integer> mPositionViewType;  //position --> type
+    private Map<Integer, Integer> mPositionViewType;  //position --> ViewType
     private ViewHolderManager mViewHolderManager;
 
     public MultiTypeAdapter(Context context) {
@@ -84,12 +84,11 @@ public class MultiTypeAdapter extends RecyclerAdapter {
         if (position == mViewCount - 1) {
             return STATUS_TYPE;
         }
-        Log.i(TAG, "mViewCount : " + mViewCount + "  position : " + position);
         return mPositionViewType.get(position);
     }
 
     @Override
-    public BaseViewHolder onCreateBaseViewHolder(ViewGroup parent, int viewType) {
+    public BaseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         if (viewType == STATUS_TYPE) {
             return new BaseViewHolder(mStatusView);
         }
@@ -111,6 +110,12 @@ public class MultiTypeAdapter extends RecyclerAdapter {
             e.printStackTrace();
             Log.i(TAG, "onCreateBaseViewHolder : " + e.getMessage());
         }
+        return null;
+
+    }
+
+    @Override
+    public BaseViewHolder onCreateBaseViewHolder(ViewGroup parent, int viewType) {
         return null;
     }
 

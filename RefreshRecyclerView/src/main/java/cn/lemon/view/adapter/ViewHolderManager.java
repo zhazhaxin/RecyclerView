@@ -16,12 +16,10 @@ public class ViewHolderManager {
     private int mViewType = 10;
     private Map<Class<? extends BaseViewHolder>, Integer> mHolderType;
     private Map<Integer,Class<? extends BaseViewHolder>> mTypeHolder;
-    private Map<Integer, Class> mTypeBean;
 
     public ViewHolderManager() {
         mHolderType = new HashMap<>();
         mTypeHolder = new HashMap<>();
-        mTypeBean = new HashMap<>();
     }
 
     public void addViewHolder(Class<? extends BaseViewHolder> viewHolder) {
@@ -30,7 +28,6 @@ public class ViewHolderManager {
             mViewType++;
             mHolderType.put(viewHolder, mViewType);
             mTypeHolder.put(mViewType,viewHolder);
-            mTypeBean.put(mViewType, dataClass);
             Log.i(TAG, "addViewHolder dataClassType : " + dataClass.getName());
         }
     }
