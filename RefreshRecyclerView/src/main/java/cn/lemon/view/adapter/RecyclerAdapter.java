@@ -50,6 +50,10 @@ public abstract class RecyclerAdapter<T> extends RecyclerView.Adapter<BaseViewHo
 
     private boolean allowLog = true;  //改成false关闭日志
 
+    public void colseLog() {
+        allowLog = false;
+    }
+
     public RecyclerAdapter(Context context) {
         mContext = context;
         initStatusView(context);
@@ -125,7 +129,7 @@ public abstract class RecyclerAdapter<T> extends RecyclerView.Adapter<BaseViewHo
 
     @Override
     public int getItemViewType(int position) {
-        log("getItemViewType : " + mViewCount);
+        log("getItemViewType");
         if (hasHeader && position == 0) {  //header
             return HEADER_TYPE;
         }

@@ -89,6 +89,7 @@ public class MultiTypeAdapter extends RecyclerAdapter {
 
     @Override
     public BaseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        log("onCreateViewHolder -- viewType : " + viewType);
         if (viewType == STATUS_TYPE) {
             return new BaseViewHolder(mStatusView);
         }
@@ -121,6 +122,7 @@ public class MultiTypeAdapter extends RecyclerAdapter {
 
     @Override
     public void onBindViewHolder(BaseViewHolder holder, int position) {
+        log("onBindViewHolder -- position : " + position);
         if (position == 0 && mViewCount == 1) return;
         if (position == mViewCount - 1) { //显示加载更多
             isLoadEnd = true;
