@@ -117,5 +117,5 @@ class CardRecordAdapter extends RecyclerAdapter<Consumption> {
     compile 'com.android.support:support-annotations:23.4.0'
 ```
 
-<img src="RecyclerAdapter.png" width="480" height="270"/>
-<img src="MultiTypeAdapter.png" width="480" height="270"/>
+<img src="RecyclerAdapter.png" width="270" height="480"/>
+<img src="MultiTypeAdapter.png" width="270" height="480"/>
