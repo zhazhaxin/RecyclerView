@@ -55,8 +55,8 @@ public class MainActivity extends AppCompatActivity {
         mAdapter.setFooter(footer);
 
         mRecyclerView = (RefreshRecyclerView) findViewById(R.id.recycler_view);
+        mRecyclerView.setSwipeRefreshColors(0xFF437845,0xFFE44F98,0xFF2FAC21);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        mRecyclerView.setSwipeRefreshColors(0x437845,0xE44F98,0x2FAC21);
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setRefreshAction(new Action() {
             @Override
@@ -94,7 +94,7 @@ public class MainActivity extends AppCompatActivity {
                     mRecyclerView.dismissSwipeRefresh();
                 } else {
                     mAdapter.addAll(getVirtualData());
-                    if (page >= 5) {
+                    if (page >= 3) {
                         mRecyclerView.showNoMore();
                     }
                 }

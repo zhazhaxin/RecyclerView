@@ -29,8 +29,8 @@ public class MultiTypeActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         mRecyclerView = (RefreshRecyclerView) findViewById(R.id.recycler_view);
+        mRecyclerView.setSwipeRefreshColors(0xFF437845,0xFFE44F98,0xFF2FAC21);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        mRecyclerView.setSwipeRefreshColors(0x437845,0xE44F98,0x2FAC21);
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setRefreshAction(new Action() {
             @Override

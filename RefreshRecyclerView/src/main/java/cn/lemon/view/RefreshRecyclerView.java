@@ -69,6 +69,7 @@ public class RefreshRecyclerView extends FrameLayout {
         }
         mAdapter.setLoadMoreAction(action);
     }
+
     public void showNoMore() {
         mAdapter.showNoMore();
     }
@@ -96,9 +97,14 @@ public class RefreshRecyclerView extends FrameLayout {
     public void setSwipeRefreshColorsFromRes(@ColorRes int... colors) {
         mSwipeRefreshLayout.setColorSchemeResources(colors);
     }
+
+    /**
+     * 8位16进制数 ARGB
+     */
     public void setSwipeRefreshColors(@ColorInt int... colors) {
         mSwipeRefreshLayout.setColorSchemeColors(colors);
     }
+
     public void showSwipeRefresh() {
         mSwipeRefreshLayout.setRefreshing(true);
     }

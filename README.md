@@ -1,14 +1,16 @@
-# RefreshRecyclerView --- 可下拉刷新，上拉加载，添加Header，Footer的RecyclerView
+# RefreshRecyclerView
+> - RecyclerAdapter : 可下拉刷新，上拉加载，添加Header，Footer
+> - MultiTypeAdapter : 针对复杂数据类型的数据列表
         
 ## 使用方法
 
-gradle依赖
+ - gradle依赖
 
 ```
-   compile 'cn.lemon:RefreshRecyclerView:0.1.2'
+   compile 'cn.lemon:RefreshRecyclerView:0.1.3'
 ```
 
-xml布局文件
+ - xml布局文件
 
 ```xml
     <cn.lemon.view.RefreshRecyclerView
@@ -17,10 +19,11 @@ xml布局文件
         android:layout_height="wrap_content" />
 ```
          
-java代码
+ - java代码
 
 ```
         mRecyclerView = (RefreshRecyclerView) findViewById(R.id.recycler_view);
+        mRecyclerView.setSwipeRefreshColors(0xFF437845,0xFFE44F98,0xFF2FAC21);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setRefreshAction(new Action() {
@@ -37,89 +40,73 @@ java代码
                 page++;
             }
         });
+        mAdapter.setHeader(textView); //添加Header
+        mAdapter.setFooter(footer); //添加Footer
 ```
                 
-RefreshRecyclerView需要设置一个Adapter。
+###Adapter
 
-Adapter应该继承 RecyclerAdapter<T>，如：
+ - RecyclerAdapter：相同数据类型列表，可添加Header，Footer
+
+自定义Adapter应该继承RecyclerAdapter<T>，如：
 
 ```java
-class MyAdapter extends RecyclerAdapter<Consumption>{
-   public MyAdapter(Context context) {
-        super(context);
-   }
+class CardRecordAdapter extends RecyclerAdapter<Consumption> {
 
-   @Override
-   public BaseViewHolder<Consumption> onCreateBaseViewHolder(ViewGroup parent, int viewType) {
-        return new MyViewHolder(parent.getContext(), R.layout.item_consume);
-   }
+    public CardRecordAdapter(Context context) {
+        super(context);
+    }
+
+    @Override
+    public BaseViewHolder<Consumption> onCreateBaseViewHolder(ViewGroup parent, int viewType) {
+        return new CardRecordHolder(parent);
+    }
 }
 ```
-        
-RecyclerView使用了ViewHolder，自定义ViewHolder需继承BaseViewHolder<T>,如：
 
-```java
-   class MyViewHolder extends BaseViewHolder<Consumption>
+ - MultiTypeAdapter：复杂数据类型列表，没有Header,Footer的概念，每个Item是一个ViewHolder
+
 ```
-     
-自定义的ViewHolder重写两个方法就好了。
-
-```java
-    class MyViewHolder extends BaseViewHolder<Consumption> {
-
-        private TextView name;
-        private TextView type;
-        private TextView consumeNum;
-        private TextView remainNum;
-        private TextView consumeAddress;
-        private TextView time;
-
-        public MyViewHolder(ViewGroup parent) {
-            super(parent, R.layout.item_consume);
-        }
-
-        @Override
-        public void setData(Consumption object) {
-            super.setData(object);
-            name.setText("Demo");
-            type.setText(object.getLx());
-            consumeNum.setText("消费金额：" + object.getJe());
-            remainNum.setText("卡里余额：" + object.getYe());
-            consumeAddress.setText(object.getSh());
-            time.setText(object.getSj());
-        }
-
-        @Override
-        public void onInitializeView() {
-            super.onInitializeView();
-            name = findViewById(R.id.name);
-            type = findViewById(R.id.type);
-            consumeNum = findViewById(R.id.consume_num);
-            remainNum = findViewById(R.id.remain_num);
-            consumeAddress = findViewById(R.id.consume_address);
-            time = findViewById(R.id.time);
-        }
-
-        @Override
-        public void onItemViewClick(Consumption object) {
-            super.onItemViewClick(object);
-            //点击事件
-        }
-    }
+ private MultiTypeAdapter mAdapter;
+ mAdapter.add(ImageViewHolder.class, getImageVirtualData());
+ mAdapter.addAll(TextViewHolder.class, getTextVirtualData());
+ mAdapter.addAll(TextImageViewHolder.class, getTextImageVirualData());
+ mAdapter.addAll(CardRecordHolder.class, getRecordVirtualData());
 ```
 
-### RefreshRecyclerView添加Header或Footer
-     
-```
-   adapter = new MyAdapter(this);
-   //添加Header
-   TextView textView = new TextView(this);
-   textView.setLayoutParams(new LinearLayoutCompat.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, Utils.dip2px(48)));
-   textView.setTextSize(16);
-   textView.setGravity(Gravity.CENTER);
-   textView.setText("重庆邮电大学");
-   adapter.setHeader(textView);
-```
+ - ViewHolder
+ 自定义ViewHolder需继承BaseViewHolder<T>，如：
+
+ ```java
+ class CardRecordHolder extends BaseViewHolder<Consumption> {
+
+     public CardRecordHolder(ViewGroup parent) {
+         super(parent, R.layout.holder_consume);
+     }
+
+     @Override
+     public void setData(Consumption object) {
+         super.setData(object);
+         name.setText("Demo");
+         //UI绑定数据
+     }
+
+     @Override
+     public void onInitializeView() {
+         super.onInitializeView();
+         name = findViewById(R.id.name);
+         //初始化View
+     }
+
+     @Override
+     public void onItemViewClick(Consumption object) {
+         super.onItemViewClick(object);
+         //点击事件
+     }
+ }
+ ```
+
+[Demo源码](https://github.com/llxdaxia/RecyclerView/tree/master/demo)
 
 ### 注意事项
 
@@ -130,4 +117,4 @@ RecyclerView使用了ViewHolder，自定义ViewHolder需继承BaseViewHolder<T>,
     compile 'com.android.support:support-annotations:23.4.0'
 ```
 
-![demo](demo.gif)
+![RecyclerAdapter](RecyclerAdapter.png) ![MultiTypeAdapter](MultiTypeAdapter.png)
