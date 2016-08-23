@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 复杂的数据类型列表Adapter，这里没有Header,Footer的概念，所有的item都是ViewHolder
+ * 复杂的数据类型列表Adapter，这里没有Header,Footer的概念，所有的item都对应一个ViewHolder
  * Created by linlongxin on 2016/8/22.
  */
 
@@ -32,12 +32,25 @@ public class MultiTypeAdapter extends RecyclerAdapter {
         mViewHolderManager = new ViewHolderManager();
     }
 
+    public <T> void add(Class<? extends BaseViewHolder<T>> viewHolder, T data) {
+        if (isShowNoMore) {
+            return;
+        }
+        isLoadingMore = false;
+        mViewsData.add(data);
+        mViewHolderManager.addViewHolder(viewHolder);
+        int viewType = mViewHolderManager.getViewType(viewHolder);
+        mPositionViewType.put(mViewCount - 1, viewType);//mViewCount从1开始
+        mViewCount++;
+        notifyDataSetChanged();
+    }
+
     public <T> void addAll(Class<? extends BaseViewHolder<T>> viewHolder, T[] data) {
         addAll(viewHolder, Arrays.asList(data));
     }
 
     public <T> void addAll(Class<? extends BaseViewHolder<T>> viewHolder, List<T> data) {
-        if(isShowNoMore){
+        if (isShowNoMore) {
             return;
         }
         isLoadingMore = false;
@@ -51,7 +64,7 @@ public class MultiTypeAdapter extends RecyclerAdapter {
         notifyDataSetChanged();
     }
 
-    public void clear(){
+    public void clear() {
         if (mViewsData == null || mViewsData.size() == 0) {
             return;
         }
@@ -77,7 +90,7 @@ public class MultiTypeAdapter extends RecyclerAdapter {
 
     @Override
     public BaseViewHolder onCreateBaseViewHolder(ViewGroup parent, int viewType) {
-        if(viewType == STATUS_TYPE){
+        if (viewType == STATUS_TYPE) {
             return new BaseViewHolder(mStatusView);
         }
         Class clazzViewHolder = mViewHolderManager.getViewHolder(viewType);
@@ -111,7 +124,7 @@ public class MultiTypeAdapter extends RecyclerAdapter {
                 mLoadMoreAction.onAction();
                 isLoadingMore = true;
             }
-        }else {
+        } else {
             holder.setData(mViewsData.get(position));
         }
 

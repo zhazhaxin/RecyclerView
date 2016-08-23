@@ -73,12 +73,8 @@ public class RefreshRecyclerView extends FrameLayout {
         mAdapter.showNoMore();
     }
 
-    public void closeRefresh() {
-        isAllowRefresh = false;
-    }
-
-    public void openRefresh() {
-        isAllowRefresh = true;
+    public void setRefreshAble(boolean refreshAble) {
+        isAllowRefresh = refreshAble;
     }
 
     public void setItemSpace(int left, int top, int right, int bottom) {
@@ -97,17 +93,17 @@ public class RefreshRecyclerView extends FrameLayout {
         return mSwipeRefreshLayout;
     }
 
-    public void setRefreshColorsFromRes(@ColorRes int... colors) {
+    public void setSwipeRefreshColorsFromRes(@ColorRes int... colors) {
         mSwipeRefreshLayout.setColorSchemeResources(colors);
     }
-    public void setRefreshColors(@ColorInt int... colors) {
+    public void setSwipeRefreshColors(@ColorInt int... colors) {
         mSwipeRefreshLayout.setColorSchemeColors(colors);
     }
-    public void showRefresh() {
+    public void showSwipeRefresh() {
         mSwipeRefreshLayout.setRefreshing(true);
     }
 
-    public void dismissRefresh() {
+    public void dismissSwipeRefresh() {
         mSwipeRefreshLayout.setRefreshing(false);
     }
 }

@@ -4,6 +4,6 @@
 
     <item
         android:id="@+id/multi_adapter"
-        android:title="MultiAdapter"
+        android:title="复杂数据类型"
         app:showAsAction="always" />
 </menu>

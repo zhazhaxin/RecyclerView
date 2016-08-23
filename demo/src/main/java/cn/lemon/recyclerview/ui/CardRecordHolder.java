@@ -4,7 +4,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import cn.lemon.recyclerview.R;
-import cn.lemon.recyclerview.model.bean.Consumption;
+import cn.lemon.recyclerview.ui.bean.Consumption;
 import cn.lemon.view.adapter.BaseViewHolder;
 
 class CardRecordHolder extends BaseViewHolder<Consumption> {
@@ -17,7 +17,7 @@ class CardRecordHolder extends BaseViewHolder<Consumption> {
         private TextView time;
 
         public CardRecordHolder(ViewGroup parent) {
-            super(parent, R.layout.item_consume);
+            super(parent, R.layout.holder_consume);
         }
 
         @Override

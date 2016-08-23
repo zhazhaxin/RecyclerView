@@ -3,7 +3,7 @@ package cn.lemon.recyclerview.ui;
 import android.content.Context;
 import android.view.ViewGroup;
 
-import cn.lemon.recyclerview.model.bean.Consumption;
+import cn.lemon.recyclerview.ui.bean.Consumption;
 import cn.lemon.view.adapter.BaseViewHolder;
 import cn.lemon.view.adapter.RecyclerAdapter;
 

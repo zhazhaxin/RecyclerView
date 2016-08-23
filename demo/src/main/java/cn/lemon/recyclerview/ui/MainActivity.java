@@ -15,7 +15,7 @@ import android.widget.TextView;
 
 import alien95.cn.util.Utils;
 import cn.lemon.recyclerview.R;
-import cn.lemon.recyclerview.model.bean.Consumption;
+import cn.lemon.recyclerview.ui.bean.Consumption;
 import cn.lemon.view.RefreshRecyclerView;
 import cn.lemon.view.adapter.Action;
 
@@ -34,11 +34,11 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         handler = new Handler();
-        setTitle("一卡通消费记录");
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         mAdapter = new CardRecordAdapter(this);
+
         //添加Header
         final TextView textView = new TextView(this);
         textView.setLayoutParams(new LinearLayoutCompat.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, Utils.dip2px(48)));
@@ -56,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
 
         mRecyclerView = (RefreshRecyclerView) findViewById(R.id.recycler_view);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        mRecyclerView.setSwipeRefreshColors(0x437845,0xE44F98,0x2FAC21);
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setRefreshAction(new Action() {
             @Override
@@ -72,7 +73,14 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        getData(true);
+        mRecyclerView.post(new Runnable() {
+            @Override
+            public void run() {
+                mRecyclerView.showSwipeRefresh();
+                getData(true);
+            }
+        });
+
     }
 
     public void getData(final boolean isRefresh) {
@@ -83,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
                     page = 1;
                     mAdapter.clear();
                     mAdapter.addAll(getVirtualData());
-                    mRecyclerView.dismissRefresh();
+                    mRecyclerView.dismissSwipeRefresh();
                 } else {
                     mAdapter.addAll(getVirtualData());
                     if (page >= 5) {
@@ -111,7 +119,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main_activity,menu);
+        getMenuInflater().inflate(R.menu.main_activity, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
