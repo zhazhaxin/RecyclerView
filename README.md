@@ -1,5 +1,5 @@
 # RefreshRecyclerView
-> - RecyclerAdapter : 可下拉刷新，上拉加载，添加Header，Footer
+> - RecyclerAdapter : 支持下拉刷新，上拉加载，添加Header，Footer
 > - MultiTypeAdapter : 针对复杂数据类型的数据列表
         
 ## 使用方法
