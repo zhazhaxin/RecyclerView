@@ -108,7 +108,7 @@ class CardRecordAdapter extends RecyclerAdapter<Consumption> {
  }
  ```
 
-[Demo源码](https://github.com/llxdaxia/RecyclerView/tree/master/demo)
+[详细用法请看Demo](https://github.com/llxdaxia/RecyclerView/tree/master/demo)
 
 ### 注意事项
 
