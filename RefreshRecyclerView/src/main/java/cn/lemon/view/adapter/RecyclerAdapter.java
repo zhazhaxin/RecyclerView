@@ -19,7 +19,7 @@ import cn.lemon.view.R;
 
 
 /**
- * Created by llxal on 2015/12/19.
+ * Created by linlongxin on 2015/12/19.
  */
 public abstract class RecyclerAdapter<T> extends RecyclerView.Adapter<BaseViewHolder<T>> {
 
@@ -35,6 +35,7 @@ public abstract class RecyclerAdapter<T> extends RecyclerView.Adapter<BaseViewHo
     public boolean isLoadingMore = false; //正在加载
     public boolean isShowNoMore = false;//停止加载
     public boolean isLoadEnd = false;
+    public boolean loadMoreAble = false;
 
     protected Action mLoadMoreAction;
 
@@ -44,7 +45,7 @@ public abstract class RecyclerAdapter<T> extends RecyclerView.Adapter<BaseViewHo
     private View footerView;
     protected View mStatusView;
     protected LinearLayout mLoadMoreView;
-    protected TextView mNoMoreView;
+    public TextView mNoMoreView;
 
     private Context mContext;
 
@@ -120,7 +121,7 @@ public abstract class RecyclerAdapter<T> extends RecyclerView.Adapter<BaseViewHo
                 mLoadMoreView.setVisibility(View.VISIBLE);
             }
             isLoadEnd = true;
-            if (mLoadMoreAction != null && !isLoadingMore) {
+            if (mLoadMoreAction != null && !isLoadingMore && loadMoreAble) {
                 mLoadMoreAction.onAction();
                 isLoadingMore = true;
             }
@@ -169,6 +170,11 @@ public abstract class RecyclerAdapter<T> extends RecyclerView.Adapter<BaseViewHo
             isLoadingMore = false;
             mData.add(object);
             mViewCount++;
+            int position = mData.size();
+            if(hasHeader){
+                position ++;
+            }
+            notifyItemInserted(position);
         }
     }
 

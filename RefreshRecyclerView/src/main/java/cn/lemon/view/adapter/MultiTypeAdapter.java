@@ -126,7 +126,7 @@ public class MultiTypeAdapter extends RecyclerAdapter {
         if (position == 0 && mViewCount == 1) return;
         if (position == mViewCount - 1) { //显示加载更多
             isLoadEnd = true;
-            if (mLoadMoreAction != null && !isShowNoMore && !isLoadingMore) {
+            if (loadMoreAble && mLoadMoreAction != null && !isShowNoMore && !isLoadingMore) {
                 mLoadMoreView.setVisibility(View.VISIBLE);
                 mLoadMoreAction.onAction();
                 isLoadingMore = true;

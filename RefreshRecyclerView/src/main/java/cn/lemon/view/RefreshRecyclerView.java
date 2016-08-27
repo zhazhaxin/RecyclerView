@@ -1,6 +1,7 @@
 package cn.lemon.view;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.support.annotation.ColorInt;
 import android.support.annotation.ColorRes;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -9,6 +10,7 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.TextView;
 
 import cn.lemon.view.adapter.Action;
 import cn.lemon.view.adapter.RecyclerAdapter;
@@ -20,10 +22,11 @@ import cn.lemon.view.adapter.RecyclerAdapter;
 public class RefreshRecyclerView extends FrameLayout {
 
     private final String TAG = "RefreshRecyclerView";
-    private boolean isAllowRefresh = true;
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private RecyclerView mRecyclerView;
     private RecyclerAdapter mAdapter;
+    private boolean refreshAble;
+    private boolean loadMoreAble;
 
     public RefreshRecyclerView(Context context) {
         this(context, null);
@@ -38,6 +41,12 @@ public class RefreshRecyclerView extends FrameLayout {
         View view = inflate(context, R.layout.view_refresh_recycler, this);
         mRecyclerView = (RecyclerView) view.findViewById(R.id.$_recycler_view);
         mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.$_refresh_layout);
+        TypedArray typedArray = context.obtainStyledAttributes(attrs,R.styleable.RefreshRecyclerView);
+        refreshAble = typedArray.getBoolean(R.styleable.RefreshRecyclerView_refresh_able,true);
+        loadMoreAble = typedArray.getBoolean(R.styleable.RefreshRecyclerView_load_more_able,true);
+        if(!refreshAble){
+            mSwipeRefreshLayout.setEnabled(false);
+        }
     }
 
     public void setAdapter(RecyclerAdapter adapter) {
@@ -53,9 +62,6 @@ public class RefreshRecyclerView extends FrameLayout {
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                if (!isAllowRefresh) {
-                    return;
-                }
                 mAdapter.isRefreshing = true;
                 action.onAction();
             }
@@ -64,18 +70,15 @@ public class RefreshRecyclerView extends FrameLayout {
 
     public void setLoadMoreAction(final Action action) {
         Log.i(TAG, "setLoadMoreAction");
-        if (mAdapter.isShowNoMore) {
+        if (mAdapter.isShowNoMore || !loadMoreAble) {
             return;
         }
+        mAdapter.loadMoreAble = true;
         mAdapter.setLoadMoreAction(action);
     }
 
     public void showNoMore() {
         mAdapter.showNoMore();
-    }
-
-    public void setRefreshAble(boolean refreshAble) {
-        isAllowRefresh = refreshAble;
     }
 
     public void setItemSpace(int left, int top, int right, int bottom) {
@@ -92,6 +95,10 @@ public class RefreshRecyclerView extends FrameLayout {
 
     public SwipeRefreshLayout getSwipeRefreshLayout() {
         return mSwipeRefreshLayout;
+    }
+
+    public TextView getNoMoreView(){
+        return mAdapter.mNoMoreView;
     }
 
     public void setSwipeRefreshColorsFromRes(@ColorRes int... colors) {

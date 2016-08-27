@@ -7,7 +7,7 @@
  - gradle依赖
 
 ```
-   compile 'cn.lemon:RefreshRecyclerView:0.1.3'
+   compile 'cn.lemon:RefreshRecyclerView:0.1.4'
 ```
 
  - xml布局文件
@@ -16,32 +16,34 @@
     <cn.lemon.view.RefreshRecyclerView
         android:id="@+id/recycler_view"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        app:refresh_able="true"
+        app:load_more_able="false"/>
 ```
          
  - java代码
 
 ```
-        mRecyclerView = (RefreshRecyclerView) findViewById(R.id.recycler_view);
-        mRecyclerView.setSwipeRefreshColors(0xFF437845,0xFFE44F98,0xFF2FAC21);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        mRecyclerView.setAdapter(mAdapter);
-        mRecyclerView.setRefreshAction(new Action() {
-            @Override
-            public void onAction() {
-                getData(true);
-            }
-        });
+   mRecyclerView = (RefreshRecyclerView) findViewById(R.id.recycler_view);
+   mRecyclerView.setSwipeRefreshColors(0xFF437845,0xFFE44F98,0xFF2FAC21);
+   mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+   mRecyclerView.setAdapter(mAdapter);
+   mRecyclerView.setRefreshAction(new Action() {
+        @Override
+        public void onAction() {
+            getData(true);
+        }
+   });
 
-        mRecyclerView.setLoadMoreAction(new Action() {
-            @Override
-            public void onAction() {
-                getData(false);
-                page++;
-            }
-        });
-        mAdapter.setHeader(textView); //添加Header
-        mAdapter.setFooter(footer); //添加Footer
+   mRecyclerView.setLoadMoreAction(new Action() {
+        @Override
+        public void onAction() {
+            getData(false);
+            page++;
+        }
+   });
+   mAdapter.setHeader(textView); //添加Header
+   mAdapter.setFooter(footer); //添加Footer
 ```
                 
 ###Adapter
