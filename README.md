@@ -68,7 +68,7 @@ class CardRecordAdapter extends RecyclerAdapter<Consumption> {
 
 ###MultiTypeAdapter
 
->复杂数据类型列表，没有Header,Footer的概念，每个Item是一个ViewHolder
+>复杂数据类型列表，没有Header,Footer的概念，每个Item对应一个ViewHolder
 
 ```
  private MultiTypeAdapter mAdapter;
