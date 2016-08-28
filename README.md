@@ -46,9 +46,9 @@
    mAdapter.setFooter(footer); //添加Footer
 ```
                 
-###Adapter
+###RecyclerAdapter
 
- - RecyclerAdapter：相同数据类型列表，可添加Header，Footer
+>针对相同数据类型列表，可添加Header，Footer
 
 自定义Adapter应该继承RecyclerAdapter<T>，如：
 
@@ -66,7 +66,9 @@ class CardRecordAdapter extends RecyclerAdapter<Consumption> {
 }
 ```
 
- - MultiTypeAdapter：复杂数据类型列表，没有Header,Footer的概念，每个Item是一个ViewHolder
+###MultiTypeAdapter
+
+>复杂数据类型列表，没有Header,Footer的概念，每个Item是一个ViewHolder
 
 ```
  private MultiTypeAdapter mAdapter;
@@ -76,8 +78,9 @@ class CardRecordAdapter extends RecyclerAdapter<Consumption> {
  mAdapter.addAll(CardRecordHolder.class, getRecordVirtualData());
 ```
 
- - ViewHolder
- 自定义ViewHolder需继承BaseViewHolder<T>，如：
+###ViewHolder
+
+>自定义ViewHolder需继承BaseViewHolder<T>，如：
 
  ```java
  class CardRecordHolder extends BaseViewHolder<Consumption> {
