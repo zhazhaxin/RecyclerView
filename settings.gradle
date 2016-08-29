@@ -1,1 +1,1 @@
-include ':demo', ':RefreshRecyclerView'
+include ':demo', ':lib'
