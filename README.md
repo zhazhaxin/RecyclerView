@@ -85,6 +85,7 @@ class CardRecordAdapter extends RecyclerAdapter<Consumption> {
  ```java
  class CardRecordHolder extends BaseViewHolder<Consumption> {
 
+     //当使用MultiTypeAdapter时，务必加上此构造方法
      public CardRecordHolder(ViewGroup parent) {
          super(parent, R.layout.holder_consume);
      }

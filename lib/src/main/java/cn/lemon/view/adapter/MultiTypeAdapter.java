@@ -95,9 +95,16 @@ public class MultiTypeAdapter extends RecyclerAdapter {
         }
         Class clazzViewHolder = mViewHolderManager.getViewHolder(viewType);
         try {
+            //这里只适配了ViewHolder构造函数只有ViewGroup.class参数或者无参情况的构造函数
+            BaseViewHolder holder;
             Constructor constructor = clazzViewHolder.getDeclaredConstructor(new Class[]{ViewGroup.class});
             constructor.setAccessible(true);
-            return (BaseViewHolder) constructor.newInstance(new Object[]{parent});
+            holder = (BaseViewHolder) constructor.newInstance(new Object[]{parent});
+            if (holder == null) {
+                constructor = clazzViewHolder.getDeclaredConstructor();
+                holder = (BaseViewHolder) constructor.newInstance();
+            }
+            return holder;
         } catch (NoSuchMethodException e) {
             e.printStackTrace();
             Log.i(TAG, "onCreateBaseViewHolder : " + e.getMessage());

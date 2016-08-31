@@ -1,9 +1,10 @@
 package cn.lemon.recyclerview.ui;
 
+import android.view.Gravity;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 
-import cn.lemon.recyclerview.R;
 import cn.lemon.view.adapter.BaseViewHolder;
 
 class TextViewHolder extends BaseViewHolder<String> {
@@ -11,13 +12,17 @@ class TextViewHolder extends BaseViewHolder<String> {
     private TextView mText;
 
     public TextViewHolder(ViewGroup parent) {
-        super(parent, R.layout.holder_text);
+        super(new TextView(parent.getContext()));
+        mText = (TextView) itemView;
+        mText.setTextSize(16f);
+        mText.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        mText.setGravity(Gravity.CENTER);
+        mText.setPadding(24,24,24,24);
     }
 
     @Override
     public void onInitializeView() {
         super.onInitializeView();
-        mText = findViewById(R.id.text_view);
     }
 
     @Override
