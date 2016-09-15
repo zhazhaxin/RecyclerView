@@ -98,7 +98,9 @@ public abstract class RecyclerAdapter<T> extends RecyclerView.Adapter<BaseViewHo
     @Override
     public void onBindViewHolder(BaseViewHolder<T> holder, int position) {
         log("onBindViewHolder -- position : " + position);
-        if (!hasHeader && !hasFooter && position < mData.size()) { //没有Header和Footer
+        if (position == mViewCount - 1) {
+            return;
+        } else if (!hasHeader && !hasFooter && position < mData.size()) { //没有Header和Footer
             holder.setData(mData.get(position));
         } else if (hasHeader && !hasFooter && position > 0 && position < mViewCount - 1) { //有Header没有Footer
             holder.setData(mData.get(position - 1));
@@ -171,8 +173,8 @@ public abstract class RecyclerAdapter<T> extends RecyclerView.Adapter<BaseViewHo
             mData.add(object);
             mViewCount++;
             int position = mData.size();
-            if(hasHeader){
-                position ++;
+            if (hasHeader) {
+                position++;
             }
             notifyItemInserted(position);
         }
