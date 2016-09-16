@@ -111,6 +111,7 @@ class CardRecordAdapter extends RecyclerAdapter<Consumption> {
      }
  }
  ```
+ **注意**：MultiTypeAdapter的ViewHolder的构造函数保证能反射时获取，应该写成静态或者public的单独类
 
 [详细用法请看Demo](https://github.com/llxdaxia/RecyclerView/tree/master/demo)
 
