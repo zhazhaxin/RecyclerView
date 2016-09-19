@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/grey"
     android:orientation="vertical"
     tools:context=".ui.MainActivity">
 
@@ -17,8 +18,6 @@
     <cn.lemon.view.RefreshRecyclerView
         android:id="@+id/recycler_view"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:refresh_able="false"
-        app:load_more_able="true"/>
+        android:layout_height="wrap_content" />
 
 </LinearLayout>

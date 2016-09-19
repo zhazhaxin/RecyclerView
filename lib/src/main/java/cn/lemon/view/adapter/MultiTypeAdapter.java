@@ -50,7 +50,7 @@ public class MultiTypeAdapter extends RecyclerAdapter {
     }
 
     public <T> void addAll(Class<? extends BaseViewHolder<T>> viewHolder, List<T> data) {
-        if (isShowNoMore) {
+        if (isShowNoMore || data.size() == 0) {
             return;
         }
         isLoadingMore = false;
