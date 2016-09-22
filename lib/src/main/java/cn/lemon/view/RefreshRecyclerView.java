@@ -41,7 +41,7 @@ public class RefreshRecyclerView extends FrameLayout {
         View view = inflate(context, R.layout.view_refresh_recycler, this);
         mRecyclerView = (RecyclerView) view.findViewById(R.id.$_recycler_view);
         mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.$_refresh_layout);
-        TypedArray typedArray = context.obtainStyledAttributes(attrs,R.styleable.RefreshRecyclerView);
+        TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.RefreshRecyclerView);
         refreshAble = typedArray.getBoolean(R.styleable.RefreshRecyclerView_refresh_able,true);
         loadMoreAble = typedArray.getBoolean(R.styleable.RefreshRecyclerView_load_more_able,true);
         if(!refreshAble){
