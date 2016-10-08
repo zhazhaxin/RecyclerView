@@ -132,7 +132,7 @@ public abstract class RecyclerAdapter<T> extends RecyclerView.Adapter<BaseViewHo
 
     @Override
     public int getItemViewType(int position) {
-        log("getItemViewType");
+        log("getItemViewType --- position : " + position);
         if (hasHeader && position == 0) {  //header
             return HEADER_TYPE;
         }
@@ -142,6 +142,7 @@ public abstract class RecyclerAdapter<T> extends RecyclerView.Adapter<BaseViewHo
         if (position == mViewCount - 1) { //添加最后的状态view
             return STATUS_TYPE;
         }
+
         return super.getItemViewType(position);
     }
 
@@ -192,6 +193,7 @@ public abstract class RecyclerAdapter<T> extends RecyclerView.Adapter<BaseViewHo
 
     public void insert(T object, int position) {
         if (!isShowNoMore) {
+            isLoadingMore = false;
             mData.add(position, object);
             mViewCount++;
             notifyItemInserted(position);
@@ -225,28 +227,38 @@ public abstract class RecyclerAdapter<T> extends RecyclerView.Adapter<BaseViewHo
     }
 
     public void replace(T object, int position) {
-        if (!isShowNoMore) {
-            mData.set(position, object);
-            mViewCount++;
-            notifyItemChanged(position);
-        }
+        isLoadingMore = false;
+        mData.set(position, object);
+        mViewCount++;
+        notifyItemChanged(position);
     }
 
+    //position start with 0
     public void remove(T object) {
+        if(!mData.contains(object)){
+            return;
+        }
+        isLoadingMore = false;
         mData.remove(object);
-        notifyItemRemoved(mData.indexOf(object));
+        if (hasHeader) {
+            notifyItemRemoved(mData.indexOf(object) + 1);
+        } else {
+            notifyItemRemoved(mData.indexOf(object));
+        }
         mViewCount--;
     }
 
+    //position start with 0
     public void remove(int position) {
-        if(hasHeader){
-            if(position - 1 >= 0){
+        isLoadingMore = false;
+        if (hasHeader) {
+            if (position - 1 >= 0) {
                 mData.remove(position - 1);
                 notifyItemRemoved(position);
-            }else {
+            } else {
                 throw new IndexOutOfBoundsException("RecyclerView has header,position is should more than 0");
             }
-        }else {
+        } else {
             mData.remove(position);
             notifyItemRemoved(position);
         }
