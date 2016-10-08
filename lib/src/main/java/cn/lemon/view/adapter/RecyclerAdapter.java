@@ -234,13 +234,23 @@ public abstract class RecyclerAdapter<T> extends RecyclerView.Adapter<BaseViewHo
 
     public void remove(T object) {
         mData.remove(object);
-        mViewCount--;
         notifyItemRemoved(mData.indexOf(object));
+        mViewCount--;
     }
 
     public void remove(int position) {
-        mData.remove(position);
-        notifyItemRemoved(position);
+        if(hasHeader){
+            if(position - 1 >= 0){
+                mData.remove(position - 1);
+                notifyItemRemoved(position);
+            }else {
+                throw new IndexOutOfBoundsException("RecyclerView has header,position is should more than 0");
+            }
+        }else {
+            mData.remove(position);
+            notifyItemRemoved(position);
+        }
+        mViewCount--;
     }
 
     public void clear() {

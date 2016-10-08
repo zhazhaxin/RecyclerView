@@ -3,6 +3,7 @@ package cn.lemon.recyclerview.ui;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutCompat;
 import android.support.v7.widget.LinearLayoutManager;
@@ -10,6 +11,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
@@ -24,18 +26,20 @@ public class MainActivity extends AppCompatActivity {
 
     private RefreshRecyclerView mRecyclerView;
     private CardRecordAdapter mAdapter;
+    private Toolbar mToolbar;
+    private FloatingActionButton mFab;
+    private Handler mHandler;
     private int page = 1;
-    private Toolbar toolbar;
-    private Handler handler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        handler = new Handler();
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        mHandler = new Handler();
+        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(mToolbar);
+        mFab = (FloatingActionButton) findViewById(R.id.fab);
 
         mAdapter = new CardRecordAdapter(this);
 
@@ -55,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
         mAdapter.setFooter(footer);
 
         mRecyclerView = (RefreshRecyclerView) findViewById(R.id.recycler_view);
-        mRecyclerView.setSwipeRefreshColors(0xFF437845,0xFFE44F98,0xFF2FAC21);
+        mRecyclerView.setSwipeRefreshColors(0xFF437845, 0xFFE44F98, 0xFF2FAC21);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setRefreshAction(new Action() {
@@ -81,10 +85,17 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        mFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mAdapter.remove(1);
+            }
+        });
+
     }
 
     public void getData(final boolean isRefresh) {
-        handler.postDelayed(new Runnable() {
+        mHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
                 if (isRefresh) {
@@ -99,7 +110,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
             }
-        }, 2000);
+        }, 1500);
     }
 
     public Consumption[] getVirtualData() {
