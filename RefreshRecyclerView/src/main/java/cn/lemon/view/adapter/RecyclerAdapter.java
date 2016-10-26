@@ -37,7 +37,7 @@ public abstract class RecyclerAdapter<T> extends RecyclerView.Adapter<BaseViewHo
     public boolean isLoadingMore = false; //正在加载
     public boolean isShowNoMore = false;//停止加载
     public boolean isLoadEnd = false;  //是否加载到底部
-    public boolean loadMoreAble = false; //是够可加载更多
+    public boolean loadMoreAble = false; //是否可加载更多
 
     protected Action mLoadMoreAction;
 
@@ -111,8 +111,9 @@ public abstract class RecyclerAdapter<T> extends RecyclerView.Adapter<BaseViewHo
                 holder.setData(mData.get(position - 1));
             }
         }
+
         //加载到最后一个Item，显示加载更多
-        if (position == mViewCount - 2 && !isShowNoMore) {
+        if (loadMoreAble && position == mViewCount - 2 && !isShowNoMore) {
             if (hasHeader && !hasFooter && position != 0) { //有header，没有footer
                 mLoadMoreView.setVisibility(View.VISIBLE);
             } else if (hasFooter && !hasHeader && position != 0) { //有footer，没有header
@@ -239,11 +240,12 @@ public abstract class RecyclerAdapter<T> extends RecyclerView.Adapter<BaseViewHo
             return;
         }
         isLoadingMore = false;
+        int position = mData.indexOf(object);
         mData.remove(object);
         if (hasHeader) {
-            notifyItemRemoved(mData.indexOf(object) + 1);
+            notifyItemRemoved(position + 1);
         } else {
-            notifyItemRemoved(mData.indexOf(object));
+            notifyItemRemoved(position);
         }
         mViewCount--;
     }

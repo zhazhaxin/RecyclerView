@@ -51,7 +51,8 @@ public class RefreshRecyclerView extends FrameLayout {
 
     public void setAdapter(RecyclerAdapter adapter) {
         mRecyclerView.setAdapter(adapter);
-        this.mAdapter = adapter;
+        mAdapter = adapter;
+        mAdapter.loadMoreAble = loadMoreAble;
     }
 
     public void setLayoutManager(RecyclerView.LayoutManager layoutManager) {
