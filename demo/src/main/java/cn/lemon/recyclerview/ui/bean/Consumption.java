@@ -5,16 +5,6 @@ package cn.lemon.recyclerview.ui.bean;
  */
 public class Consumption {
 
-
-    /**
-     * xm : 林龙鑫
-     * sj : 2015-12-18 12:09
-     * lx : 消费
-     * je : 9.7
-     * ye : 24.19
-     * sh : 兴业苑食堂三楼
-     */
-
     private String xm;
     private String sj;
     private String lx;

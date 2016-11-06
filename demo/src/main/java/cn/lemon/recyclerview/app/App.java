@@ -2,7 +2,8 @@ package cn.lemon.recyclerview.app;
 
 import android.app.Application;
 
-import alien95.cn.util.Utils;
+import cn.alien95.util.Utils;
+
 
 /**
  * Created by linlongxin on 2016/1/24.

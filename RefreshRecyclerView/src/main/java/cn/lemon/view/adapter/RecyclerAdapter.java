@@ -329,6 +329,14 @@ public abstract class RecyclerAdapter<T> extends RecyclerView.Adapter<BaseViewHo
         }
     }
 
+    public List<T> getData(){
+        return mData;
+    }
+
+    public Context getContext(){
+        return mContext;
+    }
+
     public void log(String content) {
         if (allowLog) {
             Log.i(TAG, content);

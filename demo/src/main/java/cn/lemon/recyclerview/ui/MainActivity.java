@@ -15,7 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import alien95.cn.util.Utils;
+import cn.alien95.util.Utils;
 import cn.lemon.recyclerview.R;
 import cn.lemon.recyclerview.ui.bean.Consumption;
 import cn.lemon.view.RefreshRecyclerView;
