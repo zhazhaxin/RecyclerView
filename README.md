@@ -125,4 +125,4 @@ class CardRecordAdapter extends RecyclerAdapter<Consumption> {
 ```
 
 <img src="screenshot/RecyclerAdapter.png" width="270" height="480"/>
-<img src="screenshotMultiTypeAdapter.png" width="270" height="480"/>
+<img src="screenshot/MultiTypeAdapter.png" width="270" height="480"/>
