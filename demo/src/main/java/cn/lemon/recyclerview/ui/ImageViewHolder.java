@@ -1,5 +1,6 @@
 package cn.lemon.recyclerview.ui;
 
+import android.util.Log;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
@@ -32,5 +33,11 @@ public class ImageViewHolder extends BaseViewHolder<String> {
         Glide.with(itemView.getContext())
                 .load(object)
                 .into(mImage);
+    }
+
+    @Override
+    public void onItemViewClick(String object) {
+        super.onItemViewClick(object);
+        Log.i("ImageViewHolder","onItemViewClick");
     }
 }

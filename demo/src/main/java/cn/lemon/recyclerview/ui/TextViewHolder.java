@@ -1,5 +1,6 @@
 package cn.lemon.recyclerview.ui;
 
+import android.util.Log;
 import android.view.Gravity;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -29,6 +30,11 @@ class TextViewHolder extends BaseViewHolder<String> {
     public void setData(String object) {
         super.setData(object);
             mText.setText(object);
+    }
+
+    @Override
+    public void onItemViewClick(String object) {
+        Log.i("TextViewHolder","onItemViewClick");
     }
 }
 

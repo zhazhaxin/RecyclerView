@@ -1,5 +1,6 @@
 package cn.lemon.recyclerview.ui;
 
+import android.util.Log;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
@@ -21,7 +22,7 @@ class CardRecordHolder extends BaseViewHolder<Consumption> {
     }
 
     @Override
-    public void setData(Consumption object) {
+    public void setData(final Consumption object) {
         super.setData(object);
         name.setText("Demo");
         type.setText(object.getLx());
@@ -46,5 +47,6 @@ class CardRecordHolder extends BaseViewHolder<Consumption> {
     public void onItemViewClick(Consumption object) {
         super.onItemViewClick(object);
         //点击事件
+        Log.i("CardRecordHolder","onItemViewClick");
     }
 }
