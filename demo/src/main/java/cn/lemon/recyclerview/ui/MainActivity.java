@@ -26,8 +26,6 @@ public class MainActivity extends AppCompatActivity {
 
     private RefreshRecyclerView mRecyclerView;
     private CardRecordAdapter mAdapter;
-    private Toolbar mToolbar;
-    private FloatingActionButton mFab;
     private Handler mHandler;
     private int page = 1;
 
@@ -37,9 +35,9 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         mHandler = new Handler();
-        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar mToolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
-        mFab = (FloatingActionButton) findViewById(R.id.fab);
+        FloatingActionButton mFab = (FloatingActionButton) findViewById(R.id.fab);
 
         mAdapter = new CardRecordAdapter(this);
 
@@ -49,14 +47,14 @@ public class MainActivity extends AppCompatActivity {
         textView.setTextSize(16);
         textView.setGravity(Gravity.CENTER);
         textView.setText("重庆邮电大学");
-        mAdapter.setHeader(textView);
+//        mAdapter.setHeader(textView);
         //添加footer
         final TextView footer = new TextView(this);
         footer.setLayoutParams(new LinearLayoutCompat.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, Utils.dip2px(48)));
         footer.setTextSize(16);
         footer.setGravity(Gravity.CENTER);
-        footer.setText("我是Footer");
-        mAdapter.setFooter(footer);
+        footer.setText("-- Footer --");
+//        mAdapter.setFooter(footer);
 
         mRecyclerView = (RefreshRecyclerView) findViewById(R.id.recycler_view);
         mRecyclerView.setSwipeRefreshColors(0xFF437845, 0xFFE44F98, 0xFF2FAC21);
@@ -103,6 +101,7 @@ public class MainActivity extends AppCompatActivity {
                     mAdapter.clear();
                     mAdapter.addAll(getVirtualData());
                     mRecyclerView.dismissSwipeRefresh();
+                    mRecyclerView.getRecyclerView().scrollToPosition(0);
                 } else {
                     mAdapter.addAll(getVirtualData());
                     if (page >= 3) {

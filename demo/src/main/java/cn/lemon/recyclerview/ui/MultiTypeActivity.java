@@ -1,9 +1,11 @@
 package cn.lemon.recyclerview.ui;
 
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
+import android.view.View;
 
 import cn.lemon.recyclerview.R;
 import cn.lemon.recyclerview.ui.bean.Consumption;
@@ -16,7 +18,6 @@ public class MultiTypeActivity extends AppCompatActivity {
 
     private RefreshRecyclerView mRecyclerView;
     private MultiTypeAdapter mAdapter;
-    private Toolbar toolbar;
     private int mPage = 0;
 
     @Override
@@ -25,7 +26,7 @@ public class MultiTypeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_multi_type);
 
         mAdapter = new MultiTypeAdapter(this);
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         mRecyclerView = (RefreshRecyclerView) findViewById(R.id.recycler_view);
@@ -51,6 +52,14 @@ public class MultiTypeActivity extends AppCompatActivity {
                 getData(true);
             }
         });
+
+        FloatingActionButton mFab = (FloatingActionButton) findViewById(R.id.fab);
+        mFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mAdapter.add(ImageViewHolder.class, getImageVirtualData());
+            }
+        });
     }
 
     public void getData(final boolean isRefresh) {
@@ -72,6 +81,9 @@ public class MultiTypeActivity extends AppCompatActivity {
                 mAdapter.addAll(CardRecordHolder.class, getRecordVirtualData());
                 if (mPage >= 3) {
                     mAdapter.showNoMore();
+                }
+                if(isRefresh){
+                    mRecyclerView.getRecyclerView().scrollToPosition(0);
                 }
             }
         }, 1000);

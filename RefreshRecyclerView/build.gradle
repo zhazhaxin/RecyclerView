@@ -1,14 +1,14 @@
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion "23.0.3"
+    compileSdkVersion 25
+    buildToolsVersion "25.0.2"
 
     defaultConfig {
         minSdkVersion 15
-        targetSdkVersion 23
-        versionCode 1
-        versionName "1.0"
+        targetSdkVersion 25
+        versionCode 3
+        versionName "1.1.9"
     }
     buildTypes {
         release {
@@ -20,8 +20,7 @@ android {
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile 'com.android.support:recyclerview-v7:23.4.0'
-    compile 'com.android.support:support-annotations:23.4.0'
+    compile 'com.android.support:recyclerview-v7:25.2.0'
 }
 
 ext {
@@ -30,13 +29,13 @@ ext {
 
     publishedGroupId = 'cn.lemon'
     artifact = 'RefreshRecyclerView'
-    libraryVersion = '0.1.7'
+    libraryVersion = '1.1.9'
 
     siteUrl = 'https://github.com/llxdaxia/RefreshRecyclerView'
     gitUrl = 'https://github.com/llxdaxia/RefreshRecyclerView.git'
 
     libraryName = 'RefreshRecyclerView' //项目名字，没什么用
-    libraryDescription = 'A pull refresh,push load more data for RecyclerView' //项目描述，没什么用
+    libraryDescription = 'A pull refresh , push load more data for RecyclerView' //项目描述，没什么用
 
     developerId = 'Lemon'
     developerName = 'Lemon'

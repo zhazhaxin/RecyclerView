@@ -36,13 +36,13 @@ public class MultiTypeAdapter extends RecyclerAdapter {
         if (isShowNoMore) {
             return;
         }
-        isLoadingMore = false;
         mViewsData.add(data);
         mViewHolderManager.addViewHolder(viewHolder);
         int viewType = mViewHolderManager.getViewType(viewHolder);
         mPositionViewType.put(mViewCount - 1, viewType);//mViewCount从1开始
+        int positionStart = mViewCount - 1;
         mViewCount++;
-        notifyDataSetChanged();
+        notifyItemRangeInserted(positionStart, 1);
     }
 
     public <T> void addAll(Class<? extends BaseViewHolder<T>> viewHolder, T[] data) {
@@ -50,18 +50,19 @@ public class MultiTypeAdapter extends RecyclerAdapter {
     }
 
     public <T> void addAll(Class<? extends BaseViewHolder<T>> viewHolder, List<T> data) {
-        if (isShowNoMore || data.size() == 0) {
+        int size = data.size();
+        if (isShowNoMore || size == 0) {
             return;
         }
-        isLoadingMore = false;
         mViewsData.addAll(data);
         mViewHolderManager.addViewHolder(viewHolder);
         int viewType = mViewHolderManager.getViewType(viewHolder);
-        for (int i = 0; i < data.size(); i++) {
-            mPositionViewType.put(mViewCount - 1, viewType);//mViewCount从1开始
+        int positionStart = mViewCount - 1;
+        for (int i = 0; i < size; i++) {
+            mPositionViewType.put(mViewCount - 1, viewType); //mViewCount从1开始
             mViewCount++;
         }
-        notifyDataSetChanged();
+        notifyItemRangeInserted(positionStart, size);
     }
 
     public void clear() {
@@ -72,9 +73,7 @@ public class MultiTypeAdapter extends RecyclerAdapter {
         mViewCount = 1;
         notifyDataSetChanged();
 
-        isRefreshing = false;
         isShowNoMore = false;
-        isLoadingMore = false;
         mLoadMoreView.setVisibility(View.GONE);
         mNoMoreView.setVisibility(View.GONE);
     }
@@ -130,17 +129,17 @@ public class MultiTypeAdapter extends RecyclerAdapter {
     @Override
     public void onBindViewHolder(BaseViewHolder holder, int position) {
         log("onBindViewHolder -- position : " + position);
-        if (position == 0 && mViewCount == 1) return;
-        if (position == mViewCount - 1) { //显示加载更多
-            isLoadEnd = true;
-            if (loadMoreAble && mLoadMoreAction != null && !isShowNoMore && !isLoadingMore) {
+        if (position == 0 && mViewCount == 1) {
+
+        } else if (position == mViewCount - 1) {
+            // 显示加载更多
+            if (loadMoreAble && mLoadMoreAction != null && !isShowNoMore) {
                 mLoadMoreView.setVisibility(View.VISIBLE);
                 mLoadMoreAction.onAction();
-                isLoadingMore = true;
             }
         } else {
             holder.setData(mViewsData.get(position));
         }
-
     }
+
 }
