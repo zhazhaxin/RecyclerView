@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
         textView.setTextSize(16);
         textView.setGravity(Gravity.CENTER);
         textView.setText("重庆邮电大学");
-//        mAdapter.setHeader(textView);
+        mAdapter.setHeader(textView);
         //添加footer
         final TextView footer = new TextView(this);
         footer.setLayoutParams(new LinearLayoutCompat.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, Utils.dip2px(48)));

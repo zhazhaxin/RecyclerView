@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -78,13 +79,13 @@ public abstract class RecyclerAdapter<T> extends RecyclerView.Adapter<BaseViewHo
     }
 
     @Override
-    public BaseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public BaseViewHolder<T> onCreateViewHolder(ViewGroup parent, int viewType) {
         if (viewType == HEADER_TYPE) {
-            return new BaseViewHolder(headerView);
+            return new BaseViewHolder<>(headerView);
         } else if (viewType == FOOTER_TYPE) {
-            return new BaseViewHolder(footerView);
+            return new BaseViewHolder<>(footerView);
         } else if (viewType == STATUS_TYPE) {
-            return new BaseViewHolder(mStatusView);
+            return new BaseViewHolder<>(mStatusView);
         } else
             return onCreateBaseViewHolder(parent, viewType);
     }
@@ -99,7 +100,12 @@ public abstract class RecyclerAdapter<T> extends RecyclerView.Adapter<BaseViewHo
     public void onBindViewHolder(BaseViewHolder<T> holder, int position) {
         log("onBindViewHolder  viewCount : " + mViewCount + " position : " + position);
         if (position == 0) {
-            return;
+            // 最先加载 mStatusView 时不需要绑定数据
+            if (mViewCount == 1 || hasHeader) {
+                return;
+            } else {
+                holder.setData(mData.get(0));
+            }
         } else if (!hasHeader && !hasFooter && position < mData.size()) { //没有Header和Footer
             holder.setData(mData.get(position));
         } else if (hasHeader && !hasFooter && position > 0 && position < mViewCount - 1) { //有Header没有Footer
@@ -110,15 +116,12 @@ public abstract class RecyclerAdapter<T> extends RecyclerView.Adapter<BaseViewHo
             holder.setData(mData.get(position - 1));
         }
 
+        // 最后一个可见的 item 时 加载更多。解决 remove 时 bug
         int positionEnd;
-        if (hasHeader && hasFooter) {
+        if ((hasHeader && hasFooter) || (!hasHeader && hasFooter)) {
             positionEnd = mViewCount - 3;
-        } else if (hasHeader && !hasFooter) {
-            positionEnd = mViewCount - 2;
-        } else if (!hasHeader && hasFooter) {
-            positionEnd = mViewCount - 2;
         } else {
-            positionEnd = mViewCount - 1;
+            positionEnd = mViewCount - 2;
         }
         if (loadMoreAble && !isShowNoMore && position == positionEnd) {
             mLoadMoreView.setVisibility(View.VISIBLE);
@@ -245,18 +248,23 @@ public abstract class RecyclerAdapter<T> extends RecyclerView.Adapter<BaseViewHo
 
     //position start with 0
     public void remove(int position) {
+        int dataPosition;
+        int dataSize = mData.size();
         if (hasHeader) {
-            if (position - 1 >= 0 && !mData.isEmpty()) {
-                mData.remove(position - 1);
+            dataPosition = position - 1;
+            if (dataPosition >= 0 && dataPosition < dataSize) {
+                mData.remove(dataPosition);
                 notifyItemRemoved(position);
-            } else if (position - 1 >= 0 && mData.isEmpty()) {
-                return;
+            } else if (dataPosition >= dataSize) {
+                Toast.makeText(getContext(),"删除失败",Toast.LENGTH_SHORT).show();
             } else {
-                throw new IndexOutOfBoundsException("RecyclerView has header,position is should more than 0");
+                throw new IndexOutOfBoundsException("RecyclerView has header,position is should more than 0 ." +
+                        "if you want remove header , pleasure user removeHeader()");
             }
         } else {
-            if (mData.isEmpty()) {
-                return;
+            dataPosition = position;
+            if (dataPosition >= dataSize) {
+                Toast.makeText(getContext(),"删除失败",Toast.LENGTH_SHORT).show();
             } else {
                 mData.remove(position);
                 notifyItemRemoved(position);
@@ -316,12 +324,14 @@ public abstract class RecyclerAdapter<T> extends RecyclerView.Adapter<BaseViewHo
     public void removeHeader() {
         if (hasHeader) {
             hasHeader = false;
+            notifyItemRemoved(0);
         }
     }
 
     public void removeFooter() {
         if (hasFooter) {
             hasFooter = false;
+            notifyItemRemoved(mViewCount - 2);
         }
     }
 
