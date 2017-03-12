@@ -54,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
         footer.setTextSize(16);
         footer.setGravity(Gravity.CENTER);
         footer.setText("-- Footer --");
-//        mAdapter.setFooter(footer);
+        mAdapter.setFooter(footer);
 
         mRecyclerView = (RefreshRecyclerView) findViewById(R.id.recycler_view);
         mRecyclerView.setSwipeRefreshColors(0xFF437845, 0xFFE44F98, 0xFF2FAC21);

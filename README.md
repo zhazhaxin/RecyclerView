@@ -48,9 +48,9 @@
                 
 ###RecyclerAdapter
 
->针对相同数据类型列表，可添加Header，Footer
+>针对相同数据类型列表，可添加 Header，Footer
 
-自定义Adapter应该继承RecyclerAdapter<T>，如：
+自定义 Adapter 应该继承 RecyclerAdapter<T>，如：
 
 ```java
 class CardRecordAdapter extends RecyclerAdapter<Consumption> {
@@ -68,7 +68,7 @@ class CardRecordAdapter extends RecyclerAdapter<Consumption> {
 
 ###MultiTypeAdapter
 
->复杂数据类型列表，没有Header,Footer的概念，每个Item对应一个ViewHolder
+>复杂数据类型列表的 Adapter，没有 Header,Footer 的概念，每个 Item 对应一个 ViewHolder
 
 ```
  private MultiTypeAdapter mAdapter;
@@ -80,7 +80,7 @@ class CardRecordAdapter extends RecyclerAdapter<Consumption> {
 
 ###ViewHolder
 
->自定义ViewHolder需继承BaseViewHolder<T>，如：
+>自定义 ViewHolder 需继承 BaseViewHolder<T>，如：
 
  ```java
  class CardRecordHolder extends BaseViewHolder<Consumption> {
@@ -111,7 +111,7 @@ class CardRecordAdapter extends RecyclerAdapter<Consumption> {
      }
  }
  ```
- **注意**：MultiTypeAdapter的ViewHolder的构造函数保证能反射时获取，应该写成静态或者public的单独类
+ **注意**：MultiTypeAdapter 使用的 ViewHolder, 构造函数为保证反射时能获取到，应该写成静态或者 public 的单独类
 
 [详细用法请看Demo](https://github.com/llxdaxia/RecyclerView/tree/master/demo)
 
@@ -120,8 +120,7 @@ class CardRecordAdapter extends RecyclerAdapter<Consumption> {
  - 依赖了其他库
 
 ```
-    compile 'com.android.support:recyclerview-v7:23.4.0'
-    compile 'com.android.support:support-annotations:23.4.0'
+    compile 'com.android.support:recyclerview-v7:25.2.0'
 ```
 
 <img src="screenshot/RecyclerAdapter.png" width="270" height="480"/>
