@@ -98,7 +98,7 @@ public abstract class RecyclerAdapter<T> extends RecyclerView.Adapter<BaseViewHo
      */
     @Override
     public void onBindViewHolder(BaseViewHolder<T> holder, int position) {
-        log("onBindViewHolder  viewCount : " + mViewCount + " position : " + position);
+        log("onBindViewHolder()  viewCount : " + mViewCount + " position : " + position);
         if (position == 0) {
             // 最先加载 mStatusView 时不需要绑定数据
             if (mViewCount == 1 || hasHeader) {
@@ -197,11 +197,17 @@ public abstract class RecyclerAdapter<T> extends RecyclerView.Adapter<BaseViewHo
         }
     }
 
-    public void insert(T object, int position) {
-        if (!isShowNoMore) {
-            mData.add(position, object);
+    public void insert(T object, int itemPosition) {
+        if (mData != null && itemPosition < mViewCount) {
+            int dataPosition;
+            if(hasHeader){
+                dataPosition = itemPosition - 1;
+            }else {
+                dataPosition = itemPosition;
+            }
+            mData.add(dataPosition, object);
             mViewCount++;
-            notifyItemInserted(position);
+            notifyItemInserted(itemPosition);
         }
     }
 
@@ -217,7 +223,7 @@ public abstract class RecyclerAdapter<T> extends RecyclerView.Adapter<BaseViewHo
             }
             mViewCount += size;
             notifyItemRangeInserted(positionStart, size);
-            log("addAll : startPosition : " + positionStart + "  itemCount : " + size);
+            log("addAll()  startPosition : " + positionStart + "  itemCount : " + size);
         }
     }
 
@@ -225,36 +231,49 @@ public abstract class RecyclerAdapter<T> extends RecyclerView.Adapter<BaseViewHo
         addAll(Arrays.asList(objects));
     }
 
-    public void replace(T object, int position) {
-        mData.set(position, object);
-        mViewCount++;
-        notifyItemChanged(position);
+    public void replace(T object, int itemPosition) {
+        if(mData != null){
+            int dataPosition;
+            if(hasHeader){
+                dataPosition = itemPosition - 1;
+            }else {
+                dataPosition = itemPosition;
+            }
+            if(dataPosition < mData.size()){
+                mData.set(dataPosition, object);
+                mViewCount++;
+                notifyItemChanged(itemPosition);
+            }
+        }
     }
 
     //position start with 0
     public void remove(T object) {
         if (!mData.contains(object)) {
+            Toast.makeText(getContext(),"删除失败",Toast.LENGTH_SHORT).show();
+            log("remove()  without the object : " + object.getClass().getName());
             return;
         }
-        int position = mData.indexOf(object);
-        mData.remove(object);
-        if (hasHeader) {
-            notifyItemRemoved(position + 1);
-        } else {
-            notifyItemRemoved(position);
+        int dataPosition = mData.indexOf(object);
+        int itemPosition;
+        if(hasHeader){
+            itemPosition = dataPosition + 1;
+        }else {
+            itemPosition = dataPosition;
         }
-        mViewCount--;
+        remove(itemPosition);
     }
 
-    //position start with 0
-    public void remove(int position) {
+    //positionItem start with 0
+    public void remove(int itemPosition) {
         int dataPosition;
         int dataSize = mData.size();
         if (hasHeader) {
-            dataPosition = position - 1;
+            dataPosition = itemPosition - 1;
             if (dataPosition >= 0 && dataPosition < dataSize) {
                 mData.remove(dataPosition);
-                notifyItemRemoved(position);
+                notifyItemRemoved(itemPosition);
+                mViewCount--;
             } else if (dataPosition >= dataSize) {
                 Toast.makeText(getContext(),"删除失败",Toast.LENGTH_SHORT).show();
             } else {
@@ -262,19 +281,20 @@ public abstract class RecyclerAdapter<T> extends RecyclerView.Adapter<BaseViewHo
                         "if you want remove header , pleasure user removeHeader()");
             }
         } else {
-            dataPosition = position;
+            dataPosition = itemPosition;
             if (dataPosition >= dataSize) {
                 Toast.makeText(getContext(),"删除失败",Toast.LENGTH_SHORT).show();
             } else {
-                mData.remove(position);
-                notifyItemRemoved(position);
+                mData.remove(dataPosition);
+                notifyItemRemoved(itemPosition);
+                mViewCount--;
             }
         }
-        mViewCount--;
     }
 
     public void clear() {
-        if (mData == null || mData.size() == 0) {
+        if (mData == null) {
+            log("clear() mData is null");
             return;
         }
         mData.clear();
@@ -285,11 +305,10 @@ public abstract class RecyclerAdapter<T> extends RecyclerView.Adapter<BaseViewHo
         if (hasFooter) {
             mViewCount++;
         }
-        notifyDataSetChanged();
-
         isShowNoMore = false;
         mLoadMoreView.setVisibility(View.GONE);
         mNoMoreView.setVisibility(View.GONE);
+        notifyDataSetChanged();
     }
 
 

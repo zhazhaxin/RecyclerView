@@ -7,11 +7,12 @@ import android.view.View;
 import android.view.ViewGroup;
 
 /**
+ * BaseViewHolder 顶级父类
  * Created by linlongxin on 2015/12/19.
  */
 public class BaseViewHolder<T> extends RecyclerView.ViewHolder{
 
-    private final String TAG = "RecyclerView_BaseViewHolder";
+    private final String TAG = "BaseViewHolder";
 
     public BaseViewHolder(View itemView) {
         super(itemView);
@@ -30,16 +31,16 @@ public class BaseViewHolder<T> extends RecyclerView.ViewHolder{
         return (T) itemView.findViewById(resId);
     }
 
-    public void setData(final T object) {
+    public void setData(final T data) {
         itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onItemViewClick(object);
+                onItemViewClick(data);
             }
         });
     }
 
-    public void onItemViewClick(T object) {
+    public void onItemViewClick(T data) {
 
     }
 

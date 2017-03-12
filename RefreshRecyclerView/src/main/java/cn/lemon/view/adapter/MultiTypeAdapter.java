@@ -2,6 +2,7 @@ package cn.lemon.view.adapter;
 
 import android.content.Context;
 import android.util.Log;
+import android.util.SparseIntArray;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -9,12 +10,10 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
- * 复杂的数据类型列表Adapter，这里没有Header,Footer的概念，所有的item都对应一个ViewHolder
+ * 复杂的数据类型列表 Adapter , 没有 Header , Footer 的概念，所有的 item 都对应一个 ViewHolder
  * Created by linlongxin on 2016/8/22.
  */
 
@@ -22,13 +21,13 @@ public class MultiTypeAdapter extends RecyclerAdapter {
 
     private final String TAG = "MultiTypeAdapter";
     private List<Object> mViewsData;
-    private Map<Integer, Integer> mPositionViewType;  //position --> ViewType
+    private SparseIntArray mPositionViewType;  //position --> ViewType
     private ViewHolderManager mViewHolderManager;
 
     public MultiTypeAdapter(Context context) {
         super(context);
         mViewsData = new ArrayList<>();
-        mPositionViewType = new HashMap<>();
+        mPositionViewType = new SparseIntArray();
         mViewHolderManager = new ViewHolderManager();
     }
 
@@ -66,16 +65,16 @@ public class MultiTypeAdapter extends RecyclerAdapter {
     }
 
     public void clear() {
-        if (mViewsData == null || mViewsData.size() == 0) {
+        if (mViewsData == null) {
+            log("clear() mData is null");
             return;
         }
         mViewsData.clear();
         mViewCount = 1;
-        notifyDataSetChanged();
-
         isShowNoMore = false;
         mLoadMoreView.setVisibility(View.GONE);
         mNoMoreView.setVisibility(View.GONE);
+        notifyDataSetChanged();
     }
 
     @Override
