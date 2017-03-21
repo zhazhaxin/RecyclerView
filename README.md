@@ -1,6 +1,6 @@
 # RefreshRecyclerView
 > - RecyclerAdapter : 支持下拉刷新，上拉加载，添加Header，Footer
-> - MultiTypeAdapter : 针对复杂数据类型的数据列表
+> - MultiTypeAdapter : 针对 复杂数据类型列表 展示Adapter 
         
 ## 使用方法
 
@@ -46,7 +46,7 @@
    mAdapter.setFooter(footer); //添加Footer
 ```
                 
-###RecyclerAdapter
+### RecyclerAdapter
 
 >针对相同数据类型列表，可添加 Header，Footer
 
@@ -66,7 +66,7 @@ class CardRecordAdapter extends RecyclerAdapter<Consumption> {
 }
 ```
 
-###MultiTypeAdapter
+### MultiTypeAdapter
 
 >复杂数据类型列表的 Adapter，没有 Header,Footer 的概念，每个 Item 对应一个 ViewHolder
 
@@ -78,7 +78,7 @@ class CardRecordAdapter extends RecyclerAdapter<Consumption> {
  mAdapter.addAll(CardRecordHolder.class, getRecordVirtualData());
 ```
 
-###ViewHolder
+### ViewHolder
 
 >自定义 ViewHolder 需继承 BaseViewHolder<T>，如：
 
