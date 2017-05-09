@@ -364,7 +364,7 @@ public abstract class RecyclerAdapter<T> extends RecyclerView.Adapter<BaseViewHo
 
     public void log(String content) {
         if (allowLog) {
-            Log.i(TAG, content);
+            Log.e(TAG, content);
         }
     }
 }

@@ -105,16 +105,16 @@ public class MultiTypeAdapter extends RecyclerAdapter {
             return holder;
         } catch (NoSuchMethodException e) {
             e.printStackTrace();
-            Log.i(TAG, "onCreateBaseViewHolder : " + e.getMessage());
+            Log.e(TAG, "onCreateBaseViewHolder : " + e.getMessage());
         } catch (IllegalAccessException e) {
             e.printStackTrace();
-            Log.i(TAG, "onCreateBaseViewHolder : " + e.getMessage());
+            Log.e(TAG, "onCreateBaseViewHolder : " + e.getMessage());
         } catch (InstantiationException e) {
             e.printStackTrace();
-            Log.i(TAG, "onCreateBaseViewHolder : " + e.getMessage());
+            Log.e(TAG, "onCreateBaseViewHolder : " + e.getMessage());
         } catch (InvocationTargetException e) {
             e.printStackTrace();
-            Log.i(TAG, "onCreateBaseViewHolder : " + e.getMessage());
+            Log.e(TAG, "onCreateBaseViewHolder : " + e.getMessage());
         }
         return null;
 

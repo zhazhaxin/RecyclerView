@@ -70,7 +70,7 @@ public class RefreshRecyclerView extends FrameLayout {
     }
 
     public void setLoadMoreAction(final Action action) {
-        Log.i(TAG, "setLoadMoreAction");
+        Log.e(TAG, "setLoadMoreAction");
         if (mAdapter.isShowNoMore || !loadMoreAble) {
             return;
         }

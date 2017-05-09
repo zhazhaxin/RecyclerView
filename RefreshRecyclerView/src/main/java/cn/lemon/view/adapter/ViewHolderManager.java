@@ -28,7 +28,7 @@ public class ViewHolderManager {
             mViewType++;
             mHolderType.put(viewHolder, mViewType);
             mTypeHolder.put(mViewType,viewHolder);
-            Log.i(TAG, "addViewHolder dataClassType : " + dataClass.getName());
+            Log.e(TAG, "addViewHolder dataClassType : " + dataClass.getName());
         }
     }
 
