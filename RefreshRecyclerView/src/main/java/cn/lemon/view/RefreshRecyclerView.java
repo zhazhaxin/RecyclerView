@@ -5,6 +5,7 @@ import android.content.res.TypedArray;
 import android.support.annotation.ColorInt;
 import android.support.annotation.ColorRes;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -42,8 +43,8 @@ public class RefreshRecyclerView extends FrameLayout {
         mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.$_refresh_layout);
         TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.RefreshRecyclerView);
         boolean refreshAble = typedArray.getBoolean(R.styleable.RefreshRecyclerView_refresh_able, true);
-        loadMoreAble = typedArray.getBoolean(R.styleable.RefreshRecyclerView_load_more_able,true);
-        if(!refreshAble){
+        loadMoreAble = typedArray.getBoolean(R.styleable.RefreshRecyclerView_load_more_able, true);
+        if (!refreshAble) {
             mSwipeRefreshLayout.setEnabled(false);
         }
     }
@@ -54,10 +55,23 @@ public class RefreshRecyclerView extends FrameLayout {
         mAdapter.loadMoreAble = loadMoreAble;
     }
 
-    public void setLayoutManager(RecyclerView.LayoutManager layoutManager) {
+    public void setLayoutManager(final RecyclerView.LayoutManager layoutManager) {
         mRecyclerView.setLayoutManager(layoutManager);
-        layoutManager.getChildCount();
-        layoutManager.getItemCount();
+        if (layoutManager instanceof GridLayoutManager) {
+            ((GridLayoutManager) layoutManager).setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+                @Override
+                public int getSpanSize(int position) {
+                    int type = mAdapter.getItemViewType(position);
+                    if (type == RecyclerAdapter.HEADER_TYPE
+                            || type == RecyclerAdapter.FOOTER_TYPE
+                            || type == RecyclerAdapter.STATUS_TYPE) {
+                        return ((GridLayoutManager) layoutManager).getSpanCount();
+                    } else {
+                        return 1;
+                    }
+                }
+            });
+        }
     }
 
     public void setRefreshAction(final Action action) {
@@ -98,7 +112,7 @@ public class RefreshRecyclerView extends FrameLayout {
         return mSwipeRefreshLayout;
     }
 
-    public TextView getNoMoreView(){
+    public TextView getNoMoreView() {
         return mAdapter.mNoMoreView;
     }
 

@@ -27,10 +27,10 @@ public abstract class RecyclerAdapter<T> extends RecyclerView.Adapter<BaseViewHo
     private static final String TAG = "RecyclerAdapter";
     private boolean allowLog = true;  //改成false关闭日志
 
-    private static final int HEADER_TYPE = 111;
-    private static final int FOOTER_TYPE = 222;
-    protected static final int STATUS_TYPE = 333;
-    protected int mViewCount = 0;
+    public static final int HEADER_TYPE = 111;
+    public static final int FOOTER_TYPE = 222;
+    public static final int STATUS_TYPE = 333;
+    int mViewCount = 0;
 
     private boolean hasHeader = false;
     private boolean hasFooter = false;
