@@ -84,7 +84,7 @@ public class RefreshRecyclerView extends FrameLayout {
     }
 
     public void setLoadMoreAction(final Action action) {
-        Log.e(TAG, "setLoadMoreAction");
+        Log.d(TAG, "setLoadMoreAction");
         if (mAdapter.isShowNoMore || !loadMoreAble) {
             return;
         }

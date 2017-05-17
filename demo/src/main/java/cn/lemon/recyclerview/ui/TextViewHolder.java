@@ -8,7 +8,7 @@ import android.widget.TextView;
 
 import cn.lemon.view.adapter.BaseViewHolder;
 
-class TextViewHolder extends BaseViewHolder<String> {
+public class TextViewHolder extends BaseViewHolder<String> {
 
     private TextView mText;
 
