@@ -71,7 +71,7 @@ class CardRecordAdapter extends RecyclerAdapter<Consumption> {
 >复杂数据类型列表的 Adapter，没有 Header,Footer 的概念，每个 Item 对应一个 ViewHolder
 
 ```
- private MultiTypeAdapter mAdapter;
+ private MultiTypeAdapter mAdapter = new MultiTypeAdapter(this);
  mAdapter.add(ImageViewHolder.class, getImageVirtualData());
  mAdapter.addAll(TextViewHolder.class, getTextVirtualData());
  mAdapter.addAll(TextImageViewHolder.class, getTextImageVirualData());
@@ -111,7 +111,7 @@ class CardRecordAdapter extends RecyclerAdapter<Consumption> {
      }
  }
  ```
- **注意**：MultiTypeAdapter 使用的 ViewHolder, 构造函数为保证反射时能获取到，应该写成静态或者 public 的单独类
+ **注意**：MultiTypeAdapter 使用的 ViewHolder, 构造函数为保证反射时能获取到，应该写成 public 静态内部类 或者 public 的单独类
 
 [详细用法请看Demo](https://github.com/llxdaxia/RecyclerView/tree/master/demo)
 
