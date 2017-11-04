@@ -7,7 +7,7 @@
  - gradle依赖
 
 ```
-   compile 'cn.lemon:RefreshRecyclerView:1.2.0'
+   compile 'cn.lemon:RefreshRecyclerView:1.2.1'
 ```
 
  - xml布局文件
@@ -28,7 +28,7 @@
    mRecyclerView.setSwipeRefreshColors(0xFF437845,0xFFE44F98,0xFF2FAC21);
    mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
    mRecyclerView.setAdapter(mAdapter);
-   mRecyclerView.setRefreshAction(new Action() {
+   mRecyclerView.addRefreshAction(new Action() {
         @Override
         public void onAction() {
             getData(true);

@@ -6,18 +6,21 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.view.ViewGroup;
 
 import cn.lemon.recyclerview.R;
 import cn.lemon.recyclerview.ui.bean.Consumption;
 import cn.lemon.recyclerview.ui.bean.TextImage;
 import cn.lemon.view.RefreshRecyclerView;
 import cn.lemon.view.adapter.Action;
-import cn.lemon.view.adapter.MultiTypeAdapter;
+import cn.lemon.view.adapter.BaseViewHolder;
+import cn.lemon.view.adapter.CustomMultiTypeAdapter;
+import cn.lemon.view.adapter.IViewHolderFactory;
 
-public class MultiTypeActivity extends AppCompatActivity {
+public class MultiTypeActivity extends AppCompatActivity implements IViewHolderFactory{
 
     private RefreshRecyclerView mRecyclerView;
-    private MultiTypeAdapter mAdapter;
+    private CustomMultiTypeAdapter mAdapter;
     private int mPage = 0;
 
     @Override
@@ -25,15 +28,16 @@ public class MultiTypeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_multi_type);
 
-        mAdapter = new MultiTypeAdapter(this);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         mRecyclerView = (RefreshRecyclerView) findViewById(R.id.recycler_view);
         mRecyclerView.setSwipeRefreshColors(0xFF437845,0xFFE44F98,0xFF2FAC21);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        mAdapter = new CustomMultiTypeAdapter(this);
+        mAdapter.setViewHolderFactory(this);
         mRecyclerView.setAdapter(mAdapter);
-        mRecyclerView.setRefreshAction(new Action() {
+        mRecyclerView.addRefreshAction(new Action() {
             @Override
             public void onAction() {
                 getData(true);
@@ -57,7 +61,7 @@ public class MultiTypeActivity extends AppCompatActivity {
         mFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mAdapter.add(ImageViewHolder.class, getImageVirtualData());
+                mAdapter.add(getImageVirtualData(), VIEW_TYPE_IAMGE);
             }
         });
     }
@@ -75,10 +79,10 @@ public class MultiTypeActivity extends AppCompatActivity {
                     mAdapter.clear();
                     mRecyclerView.dismissSwipeRefresh();
                 }
-                mAdapter.add(ImageViewHolder.class, getImageVirtualData());
-                mAdapter.addAll(TextViewHolder.class, getTextVirtualData());
-                mAdapter.addAll(TextImageViewHolder.class, getTextImageVirualData());
-                mAdapter.addAll(CardRecordHolder.class, getRecordVirtualData());
+                mAdapter.add(getImageVirtualData(), VIEW_TYPE_IAMGE);
+                mAdapter.addAll(getTextVirtualData(), VIEW_TYPE_TEXT);
+                mAdapter.addAll(getTextImageVirualData(), VIEW_TYPE_TEXT_IMAGE);
+                mAdapter.addAll(getRecordVirtualData(), VIEW_TYPE_CARD);
                 if (mPage >= 3) {
                     mAdapter.showNoMore();
                 }
@@ -115,5 +119,26 @@ public class MultiTypeActivity extends AppCompatActivity {
                 new Consumption("Demo", "2015-12-18 12:09", "消费", 9.7f, 24.19f, "兴业源三楼"),
                 new Consumption("Demo", "2015-12-18 12:09", "消费", 9.7f, 24.19f, "兴业源三楼")
         };
+    }
+
+    private final int VIEW_TYPE_TEXT = 128 << 1;
+    private final int VIEW_TYPE_IAMGE = 128 << 2;
+    private final int VIEW_TYPE_TEXT_IMAGE = 128 << 3;
+    private final int VIEW_TYPE_CARD = 128<<4;
+
+    @Override
+    public <V extends BaseViewHolder> V getViewHolder(ViewGroup parent, int viewType) {
+        switch (viewType) {
+            case VIEW_TYPE_TEXT:
+                return (V) new TextViewHolder(parent);
+            case VIEW_TYPE_IAMGE:
+                return (V) new ImageViewHolder(parent);
+            case VIEW_TYPE_TEXT_IMAGE:
+                return (V) new TextImageViewHolder(parent);
+            case VIEW_TYPE_CARD:
+                return (V) new CardRecordHolder(parent);
+            default:
+                return (V) new TextViewHolder(parent);
+        }
     }
 }

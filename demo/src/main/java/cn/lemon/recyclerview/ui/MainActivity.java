@@ -60,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
         mRecyclerView.setSwipeRefreshColors(0xFF437845, 0xFFE44F98, 0xFF2FAC21);
         mRecyclerView.setLayoutManager(new GridLayoutManager(this,2));
         mRecyclerView.setAdapter(mAdapter);
-        mRecyclerView.setRefreshAction(new Action() {
+        mRecyclerView.addRefreshAction(new Action() {
             @Override
             public void onAction() {
                 getData(true);

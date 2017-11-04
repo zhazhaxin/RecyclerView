@@ -1,6 +1,8 @@
 package cn.lemon.view.adapter;
 
 import android.util.Log;
+import android.util.SparseArray;
+import android.util.SparseIntArray;
 
 import java.lang.reflect.ParameterizedType;
 import java.util.HashMap;
@@ -14,35 +16,46 @@ public class ViewHolderManager {
 
     private final String TAG = "ViewHolderManager";
     private int mViewType = 10;
-    private Map<Class<? extends BaseViewHolder>, Integer> mHolderType;
-    private Map<Integer,Class<? extends BaseViewHolder>> mTypeHolder;
+    private Map<Class<? extends BaseViewHolder>, Integer> mHolderToTypeMap;
+    private SparseArray<Class<? extends BaseViewHolder>> mTypeToHolderMap;
+    //position to ViewType
+    private SparseIntArray mPositionToTypeMap;
 
     public ViewHolderManager() {
-        mHolderType = new HashMap<>();
-        mTypeHolder = new HashMap<>();
+        mHolderToTypeMap = new HashMap<>();
+        mTypeToHolderMap = new SparseArray<>();
+        mPositionToTypeMap = new SparseIntArray();
+    }
+
+    public void putViewType(int position, int type){
+        mPositionToTypeMap.put(position, type);
+    }
+
+    public int getViewType(int position) {
+        return mPositionToTypeMap.get(position);
     }
 
     public void addViewHolder(Class<? extends BaseViewHolder> viewHolder) {
-        if (!mHolderType.containsKey(viewHolder)) {
+        if (!mHolderToTypeMap.containsKey(viewHolder)) {
             Class dataClass = (Class) ((ParameterizedType) viewHolder.getGenericSuperclass()).getActualTypeArguments()[0]; //获取ViewHolder的泛型数据class
-            mViewType++;
-            mHolderType.put(viewHolder, mViewType);
-            mTypeHolder.put(mViewType,viewHolder);
+            mViewType ++;
+            mHolderToTypeMap.put(viewHolder, mViewType);
+            mTypeToHolderMap.put(mViewType,viewHolder);
             Log.d(TAG, "addViewHolder dataClassType : " + dataClass.getName());
         }
     }
 
     public int getViewType(Class<? extends BaseViewHolder> holder){
-        if(!mHolderType.containsKey(holder)){
-            throw new NullPointerException("please invoke addViewHolder method");
+        if(!mHolderToTypeMap.containsKey(holder)){
+            throw new IllegalArgumentException("please invoke addViewHolder method");
         }
-        return mHolderType.get(holder);
+        return mHolderToTypeMap.get(holder);
     }
 
-    public Class<? extends BaseViewHolder> getViewHolder(int viewType){
-        if(!mTypeHolder.containsKey(viewType)){
-            throw new NullPointerException("please invoke addViewHolder method");
+    public Class<? extends BaseViewHolder> getViewHolderClass(int viewType){
+        if(mTypeToHolderMap.get(viewType) == null){
+            throw new IllegalArgumentException("please invoke addViewHolder method");
         }
-        return mTypeHolder.get(viewType);
+        return mTypeToHolderMap.get(viewType);
     }
 }

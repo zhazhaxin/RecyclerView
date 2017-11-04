@@ -12,7 +12,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TextView;
-
+import java.util.ArrayList;
+import java.util.List;
 import cn.lemon.view.adapter.Action;
 import cn.lemon.view.adapter.RecyclerAdapter;
 
@@ -20,12 +21,13 @@ import cn.lemon.view.adapter.RecyclerAdapter;
 /**
  * Created by linlongxin on 2016/1/24.
  */
-public class RefreshRecyclerView extends FrameLayout {
+public class RefreshRecyclerView extends FrameLayout implements SwipeRefreshLayout.OnRefreshListener{
 
     private final String TAG = "RefreshRecyclerView";
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private RecyclerView mRecyclerView;
     private RecyclerAdapter mAdapter;
+    private List<Action> mRefreshActions;
     private boolean loadMoreAble;
 
     public RefreshRecyclerView(Context context) {
@@ -39,20 +41,24 @@ public class RefreshRecyclerView extends FrameLayout {
     public RefreshRecyclerView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         View view = inflate(context, R.layout.view_refresh_recycler, this);
-        mRecyclerView = (RecyclerView) view.findViewById(R.id.$_recycler_view);
-        mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.$_refresh_layout);
+        mRecyclerView = (RecyclerView) view.findViewById(R.id.lemon_recycler_view);
+        mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.lemon_refresh_layout);
         TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.RefreshRecyclerView);
         boolean refreshAble = typedArray.getBoolean(R.styleable.RefreshRecyclerView_refresh_able, true);
         loadMoreAble = typedArray.getBoolean(R.styleable.RefreshRecyclerView_load_more_able, true);
+        mSwipeRefreshLayout.setOnRefreshListener(this);
         if (!refreshAble) {
             mSwipeRefreshLayout.setEnabled(false);
         }
     }
 
     public void setAdapter(RecyclerAdapter adapter) {
+        if (adapter == null) {
+            return;
+        }
         mRecyclerView.setAdapter(adapter);
         mAdapter = adapter;
-        mAdapter.loadMoreAble = loadMoreAble;
+        mAdapter.loadMoreEnable = loadMoreAble;
     }
 
     public void setLayoutManager(final RecyclerView.LayoutManager layoutManager) {
@@ -74,21 +80,22 @@ public class RefreshRecyclerView extends FrameLayout {
         }
     }
 
-    public void setRefreshAction(final Action action) {
-        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                action.onAction();
-            }
-        });
+    public void addRefreshAction(final Action action) {
+        if (action == null) {
+            return;
+        }
+        if (mRefreshActions == null) {
+            mRefreshActions = new ArrayList<>();
+        }
+        mRefreshActions.add(action);
     }
 
     public void setLoadMoreAction(final Action action) {
         Log.d(TAG, "setLoadMoreAction");
-        if (mAdapter.isShowNoMore || !loadMoreAble) {
+        if (mAdapter.dismissLoadMore || !loadMoreAble) {
             return;
         }
-        mAdapter.loadMoreAble = true;
+        mAdapter.loadMoreEnable = true;
         mAdapter.setLoadMoreAction(action);
     }
 
@@ -133,5 +140,12 @@ public class RefreshRecyclerView extends FrameLayout {
 
     public void dismissSwipeRefresh() {
         mSwipeRefreshLayout.setRefreshing(false);
+    }
+
+    @Override
+    public void onRefresh() {
+        for (Action a : mRefreshActions) {
+            a.onAction();
+        }
     }
 }

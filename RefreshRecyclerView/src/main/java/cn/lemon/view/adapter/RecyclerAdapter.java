@@ -11,11 +11,9 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
 import cn.lemon.view.R;
 
 
@@ -34,8 +32,8 @@ public abstract class RecyclerAdapter<T> extends RecyclerView.Adapter<BaseViewHo
 
     private boolean hasHeader = false;
     private boolean hasFooter = false;
-    public boolean isShowNoMore = false;   //停止加载
-    public boolean loadMoreAble = false;   //是否可加载更多
+    public boolean dismissLoadMore = false;   //停止加载
+    public boolean loadMoreEnable = false;   //是否可加载更多
 
     protected Action mLoadMoreAction;
 
@@ -70,12 +68,12 @@ public abstract class RecyclerAdapter<T> extends RecyclerView.Adapter<BaseViewHo
         notifyDataSetChanged();
     }
 
-    public void initStatusView(Context context) {
+    private void initStatusView(Context context) {
         mStatusView = LayoutInflater.from(context).inflate(R.layout.view_status_last, null);
         mStatusView.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         mLoadMoreView = (LinearLayout) mStatusView.findViewById(R.id.load_more_view);
         mNoMoreView = (TextView) mStatusView.findViewById(R.id.no_more_view);
-        mViewCount++;
+        mViewCount ++;
     }
 
     @Override
@@ -86,8 +84,9 @@ public abstract class RecyclerAdapter<T> extends RecyclerView.Adapter<BaseViewHo
             return new BaseViewHolder<>(footerView);
         } else if (viewType == STATUS_TYPE) {
             return new BaseViewHolder<>(mStatusView);
-        } else
+        } else {
             return onCreateBaseViewHolder(parent, viewType);
+        }
     }
 
     public abstract BaseViewHolder<T> onCreateBaseViewHolder(ViewGroup parent, int viewType);
@@ -99,20 +98,24 @@ public abstract class RecyclerAdapter<T> extends RecyclerView.Adapter<BaseViewHo
     @Override
     public void onBindViewHolder(BaseViewHolder<T> holder, int position) {
         log("onBindViewHolder()  viewCount : " + mViewCount + " position : " + position);
+        if (holder == null || position < 0) {
+            return;
+        }
+        int dataSize = mData.size();
         if (position == 0) {
             // 最先加载 mStatusView 时不需要绑定数据
             if (mViewCount == 1 || hasHeader) {
                 return;
-            } else {
+            } else if (dataSize > 0) {
                 holder.setData(mData.get(0));
             }
-        } else if (!hasHeader && !hasFooter && position < mData.size()) { //没有Header和Footer
+        } else if (!hasHeader && !hasFooter && position < dataSize) { //没有Header和Footer
             holder.setData(mData.get(position));
-        } else if (hasHeader && !hasFooter && position > 0 && position < mViewCount - 1) { //有Header没有Footer
+        } else if (hasHeader && !hasFooter && position > 0 && position < mViewCount - 1 && position - 1 < dataSize) { //有Header没有Footer
             holder.setData(mData.get(position - 1));
-        } else if (!hasHeader && position < mViewCount - 2) { //没有Header，有Footer
+        } else if (!hasHeader && position < mViewCount - 2 && position < dataSize) { //没有Header，有Footer
             holder.setData(mData.get(position));
-        } else if (position > 0 && position < mViewCount - 2) { //都有
+        } else if (position > 0 && position < mViewCount - 2 && position - 1 < dataSize) { //都有
             holder.setData(mData.get(position - 1));
         }
 
@@ -123,8 +126,8 @@ public abstract class RecyclerAdapter<T> extends RecyclerView.Adapter<BaseViewHo
         } else {
             positionEnd = mViewCount - 2;
         }
-        if (loadMoreAble && !isShowNoMore && position == positionEnd) {
-            mLoadMoreView.setVisibility(View.VISIBLE);
+        if (loadMoreEnable && !dismissLoadMore && position == positionEnd) {
+            setViewVisible(mLoadMoreView, true);
             if (mLoadMoreAction != null) {
                 mLoadMoreAction.onAction();
             }
@@ -158,25 +161,29 @@ public abstract class RecyclerAdapter<T> extends RecyclerView.Adapter<BaseViewHo
     }
 
     public void showNoMore() {
-        isShowNoMore = true;
-        mLoadMoreView.post(new Runnable() {
-            @Override
-            public void run() {
-                mLoadMoreView.setVisibility(View.GONE);
-                mNoMoreView.setVisibility(View.VISIBLE);
-            }
-        });
+        dismissLoadMore = true;
+        if (mLoadMoreView != null) {
+            mLoadMoreView.post(new Runnable() {
+                @Override
+                public void run() {
+                    setViewVisible(mLoadMoreView, false);
+                    setViewVisible(mNoMoreView, true);
+                }
+            });
+        }
     }
 
     public void openLoadMore() {
-        isShowNoMore = false;
-        mLoadMoreView.post(new Runnable() {
-            @Override
-            public void run() {
-                mLoadMoreView.setVisibility(View.VISIBLE);
-                mNoMoreView.setVisibility(View.GONE);
-            }
-        });
+        dismissLoadMore = false;
+        if (mLoadMoreView != null) {
+            mLoadMoreView.post(new Runnable() {
+                @Override
+                public void run() {
+                    setViewVisible(mLoadMoreView, true);
+                    setViewVisible(mNoMoreView, false);
+                }
+            });
+        }
     }
 
     public void setLoadMoreAction(Action action) {
@@ -184,7 +191,7 @@ public abstract class RecyclerAdapter<T> extends RecyclerView.Adapter<BaseViewHo
     }
 
     public void add(T object) {
-        if (!isShowNoMore) {
+        if (!dismissLoadMore && object != null) {
             mData.add(object);
             int position;
             if (hasFooter) {
@@ -198,7 +205,7 @@ public abstract class RecyclerAdapter<T> extends RecyclerView.Adapter<BaseViewHo
     }
 
     public void insert(T object, int itemPosition) {
-        if (mData != null && itemPosition < mViewCount) {
+        if (mData != null && itemPosition < mViewCount && object != null) {
             int dataPosition;
             if(hasHeader){
                 dataPosition = itemPosition - 1;
@@ -212,8 +219,11 @@ public abstract class RecyclerAdapter<T> extends RecyclerView.Adapter<BaseViewHo
     }
 
     public void addAll(List<T> data) {
+        if (data == null) {
+            return;
+        }
         int size = data.size();
-        if (!isShowNoMore && size > 0) {
+        if (!dismissLoadMore && size > 0) {
             mData.addAll(data);
             int positionStart;
             if (hasFooter) {
@@ -232,7 +242,7 @@ public abstract class RecyclerAdapter<T> extends RecyclerView.Adapter<BaseViewHo
     }
 
     public void replace(T object, int itemPosition) {
-        if(mData != null){
+        if(mData != null && object != null){
             int dataPosition;
             if(hasHeader){
                 dataPosition = itemPosition - 1;
@@ -249,7 +259,7 @@ public abstract class RecyclerAdapter<T> extends RecyclerView.Adapter<BaseViewHo
 
     //position start with 0
     public void remove(T object) {
-        if (!mData.contains(object)) {
+        if (object != null && !mData.contains(object)) {
             Toast.makeText(getContext(),"删除失败",Toast.LENGTH_SHORT).show();
             log("remove()  without the object : " + object.getClass().getName());
             return;
@@ -305,9 +315,9 @@ public abstract class RecyclerAdapter<T> extends RecyclerView.Adapter<BaseViewHo
         if (hasFooter) {
             mViewCount++;
         }
-        isShowNoMore = false;
-        mLoadMoreView.setVisibility(View.GONE);
-        mNoMoreView.setVisibility(View.GONE);
+        dismissLoadMore = false;
+        setViewVisible(mLoadMoreView, false);
+        setViewVisible(mNoMoreView, false);
         notifyDataSetChanged();
     }
 
@@ -350,7 +360,9 @@ public abstract class RecyclerAdapter<T> extends RecyclerView.Adapter<BaseViewHo
     public void removeFooter() {
         if (hasFooter) {
             hasFooter = false;
-            notifyItemRemoved(mViewCount - 2);
+            if (mViewCount > 1) {
+                notifyItemRemoved(mViewCount - 2);
+            }
         }
     }
 
@@ -360,6 +372,12 @@ public abstract class RecyclerAdapter<T> extends RecyclerView.Adapter<BaseViewHo
 
     public Context getContext() {
         return mContext;
+    }
+
+    protected void setViewVisible(View view, boolean visibile){
+        if (view != null) {
+            view.setVisibility(visibile ? View.VISIBLE : View.GONE);
+        }
     }
 
     public void log(String content) {
