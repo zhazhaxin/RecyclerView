@@ -50,6 +50,7 @@ public class RefreshRecyclerView extends FrameLayout implements SwipeRefreshLayo
         if (!refreshAble) {
             mSwipeRefreshLayout.setEnabled(false);
         }
+        typedArray.recycle();
     }
 
     public void setAdapter(RecyclerAdapter adapter) {
