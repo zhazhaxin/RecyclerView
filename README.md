@@ -9,6 +9,7 @@
 
 ```
    compile 'cn.lemon:RefreshRecyclerView:1.2.2'
+   compile 'com.android.support:recyclerview-v7:25.4.0'
 ```
 
 - xml布局文件
@@ -145,14 +146,6 @@ class CardRecordAdapter extends RecyclerAdapter<Consumption> {
 ```
 
 [详细用法请看Demo](https://github.com/llxdaxia/RecyclerView/tree/master/demo)
-
-### 注意事项
-
-- 依赖了 RecyclerView，避免重复依赖
-
-```
-    compile 'com.android.support:recyclerview-v7:25.4.0'
-```
 
 <img src="screenshot/RecyclerAdapter.png" width="270" height="480"/>
 <img src="screenshot/MultiTypeAdapter.png" width="270" height="480"/>
