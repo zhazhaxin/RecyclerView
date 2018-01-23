@@ -1,4 +1,15 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.lemon:code-lines-plugin:1.3'
+    }
+}
+
 apply plugin: 'com.android.application'
+apply plugin: 'code-lines'
 
 android {
     compileSdkVersion 25
@@ -18,6 +29,11 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+}
+
+codeLinesExtension {
+    dir = 'demo/src'  // 统计的路径
+    suffixs = ['.java', '.xml']  // 统计的文件类型
 }
 
 dependencies {

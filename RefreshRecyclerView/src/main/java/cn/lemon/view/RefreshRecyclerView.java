@@ -42,15 +42,17 @@ public class RefreshRecyclerView extends FrameLayout implements SwipeRefreshLayo
         super(context, attrs, defStyleAttr);
         View view = inflate(context, R.layout.view_refresh_recycler, this);
         mRecyclerView = (RecyclerView) view.findViewById(R.id.lemon_recycler_view);
+
         mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.lemon_refresh_layout);
         TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.RefreshRecyclerView);
         boolean refreshAble = typedArray.getBoolean(R.styleable.RefreshRecyclerView_refresh_able, true);
         loadMoreAble = typedArray.getBoolean(R.styleable.RefreshRecyclerView_load_more_able, true);
-        mSwipeRefreshLayout.setOnRefreshListener(this);
+        typedArray.recycle();
+
         if (!refreshAble) {
             mSwipeRefreshLayout.setEnabled(false);
         }
-        typedArray.recycle();
+        mSwipeRefreshLayout.setOnRefreshListener(this);
     }
 
     public void setAdapter(RecyclerAdapter adapter) {
