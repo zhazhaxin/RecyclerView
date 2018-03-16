@@ -10,18 +10,24 @@ import android.view.ViewGroup;
  * BaseViewHolder 顶级父类
  * Created by linlongxin on 2015/12/19.
  */
-public class BaseViewHolder<T> extends RecyclerView.ViewHolder implements View.OnClickListener{
+public class BaseViewHolder<T> extends RecyclerView.ViewHolder{
 
     private final String TAG = "BaseViewHolder";
     private T mData;
 
-    public BaseViewHolder(View itemView) {
-        super(itemView);
+    public BaseViewHolder(ViewGroup parent, int layoutId) {
+        this(LayoutInflater.from(parent.getContext()).inflate(layoutId, parent, false));
     }
 
-    public BaseViewHolder(ViewGroup parent, int layoutId) {
-        super(LayoutInflater.from(parent.getContext()).inflate(layoutId, parent, false));
+    public BaseViewHolder(View itemView) {
+        super(itemView);
         onInitializeView();
+        itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onItemViewClick(mData);
+            }
+        });
     }
 
     public void onInitializeView() {
@@ -41,23 +47,13 @@ public class BaseViewHolder<T> extends RecyclerView.ViewHolder implements View.O
             return;
         }
         mData = data;
-        itemView.setOnClickListener(this);
     }
 
     public T getData() {
         return mData;
     }
 
-    /**
-     * 需先调用 setData 方法才生效，并且保留 super.setData()
-     * @param data
-     */
     public void onItemViewClick(T data) {
 
-    }
-
-    @Override
-    public void onClick(View v) {
-        onItemViewClick(mData);
     }
 }

@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <declare-styleable name="RefreshRecyclerView">
-        <attr name="refresh_able" format="boolean"/>
-        <attr name="load_more_able" format="boolean"/>
+        <attr name="refresh_enable" format="boolean"/>
+        <!-- 其中之一为 true，都能使用 加载更多 和 显示没有更多数据 功能 -->
+        <attr name="load_more_enable" format="boolean"/>
+        <attr name="show_no_more_enable" format="boolean"/>
     </declare-styleable>
 </resources>

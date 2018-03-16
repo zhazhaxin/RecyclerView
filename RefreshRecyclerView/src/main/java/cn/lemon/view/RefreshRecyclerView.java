@@ -28,7 +28,8 @@ public class RefreshRecyclerView extends FrameLayout implements SwipeRefreshLayo
     private RecyclerView mRecyclerView;
     private RecyclerAdapter mAdapter;
     private List<Action> mRefreshActions;
-    private boolean loadMoreAble;
+    private boolean mLoadMoreEnable;
+    private boolean mShowNoMoreEnable;
 
     public RefreshRecyclerView(Context context) {
         this(context, null);
@@ -42,17 +43,18 @@ public class RefreshRecyclerView extends FrameLayout implements SwipeRefreshLayo
         super(context, attrs, defStyleAttr);
         View view = inflate(context, R.layout.view_refresh_recycler, this);
         mRecyclerView = (RecyclerView) view.findViewById(R.id.lemon_recycler_view);
-
         mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.lemon_refresh_layout);
-        TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.RefreshRecyclerView);
-        boolean refreshAble = typedArray.getBoolean(R.styleable.RefreshRecyclerView_refresh_able, true);
-        loadMoreAble = typedArray.getBoolean(R.styleable.RefreshRecyclerView_load_more_able, true);
-        typedArray.recycle();
 
-        if (!refreshAble) {
+        TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.RefreshRecyclerView);
+        mLoadMoreEnable = typedArray.getBoolean(R.styleable.RefreshRecyclerView_load_more_enable, true);
+        mShowNoMoreEnable = typedArray.getBoolean(R.styleable.RefreshRecyclerView_show_no_more_enable, true);
+        boolean refreshEnable = typedArray.getBoolean(R.styleable.RefreshRecyclerView_refresh_enable, true);
+        if (!refreshEnable) {
             mSwipeRefreshLayout.setEnabled(false);
+        } else {
+            mSwipeRefreshLayout.setOnRefreshListener(this);
         }
-        mSwipeRefreshLayout.setOnRefreshListener(this);
+        typedArray.recycle();
     }
 
     public void setAdapter(RecyclerAdapter adapter) {
@@ -61,7 +63,8 @@ public class RefreshRecyclerView extends FrameLayout implements SwipeRefreshLayo
         }
         mRecyclerView.setAdapter(adapter);
         mAdapter = adapter;
-        mAdapter.loadMoreEnable = loadMoreAble;
+        mAdapter.setLoadMoreEnable(mLoadMoreEnable);
+        mAdapter.setShowNoMoreEnable(mShowNoMoreEnable);
     }
 
     public void setLayoutManager(final RecyclerView.LayoutManager layoutManager) {
@@ -95,10 +98,10 @@ public class RefreshRecyclerView extends FrameLayout implements SwipeRefreshLayo
 
     public void setLoadMoreAction(final Action action) {
         Log.d(TAG, "setLoadMoreAction");
-        if (mAdapter.dismissLoadMore || !loadMoreAble) {
+        if (mAdapter.isShowNoMoring() || !mLoadMoreEnable) {
             return;
         }
-        mAdapter.loadMoreEnable = true;
+        mAdapter.setIsShowNoMoring(true);
         mAdapter.setLoadMoreAction(action);
     }
 

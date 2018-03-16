@@ -3,7 +3,6 @@ package cn.lemon.view.adapter;
 import android.util.Log;
 import android.util.SparseArray;
 import android.util.SparseIntArray;
-
 import java.lang.reflect.ParameterizedType;
 import java.util.HashMap;
 import java.util.Map;
@@ -47,14 +46,14 @@ public class ViewHolderManager {
 
     public int getViewType(Class<? extends BaseViewHolder> holder){
         if(!mHolderToTypeMap.containsKey(holder)){
-            throw new IllegalArgumentException("please invoke addViewHolder method");
+            throw new IllegalArgumentException("please invoke add ViewHolder method");
         }
         return mHolderToTypeMap.get(holder);
     }
 
     public Class<? extends BaseViewHolder> getViewHolderClass(int viewType){
         if(mTypeToHolderMap.get(viewType) == null){
-            throw new IllegalArgumentException("please invoke addViewHolder method");
+            throw new IllegalArgumentException("please invoke add ViewHolder method");
         }
         return mTypeToHolderMap.get(viewType);
     }

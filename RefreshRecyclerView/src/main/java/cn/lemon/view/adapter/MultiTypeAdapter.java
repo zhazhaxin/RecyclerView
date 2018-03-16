@@ -3,7 +3,6 @@ package cn.lemon.view.adapter;
 import android.content.Context;
 import android.util.Log;
 import android.view.ViewGroup;
-
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -30,7 +29,7 @@ public class MultiTypeAdapter extends RecyclerAdapter {
 
     @Override
     public int getItemViewType(int position) {
-        if (position == mViewCount - 1) {
+        if (isHasEndStatusView() && position == mViewCount - 1) {
             return STATUS_TYPE;
         }
         return mViewHolderManager.getViewType(position);
@@ -41,6 +40,9 @@ public class MultiTypeAdapter extends RecyclerAdapter {
         log("onCreateViewHolder -- viewType : " + viewType);
         if (mViewHolderManager == null) {
             throw new ExceptionInInitializerError("mViewHolderManager is null , it need init");
+        }
+        if (viewType == STATUS_TYPE) {
+            return new BaseViewHolder(mStatusView);
         }
         Class clazzViewHolder = mViewHolderManager.getViewHolderClass(viewType);
         try {
@@ -68,30 +70,38 @@ public class MultiTypeAdapter extends RecyclerAdapter {
     @Override
     public void onBindViewHolder(BaseViewHolder holder, int position) {
         log("onBindViewHolder -- position : " + position);
-        if (position == 0 && mViewCount == 1) {
+        if (isHasEndStatusView() && position == 0 && mViewCount == 1) {
             return;
         }
-        if (position == mViewCount - 1 && mLoadMoreView != null) {
-            // 显示加载更多
-            if (loadMoreEnable && mLoadMoreAction != null && !dismissLoadMore) {
-                setViewVisible(mLoadMoreView, true);
+        // 显示加载更多
+        if (!mIsShowNoMoring && mLoadMoreEnable && position == mViewCount - 1) {
+            setViewVisible(mLoadMoreView, true);
+            if (mLoadMoreAction != null && !mIsShowNoMoring) {
                 mLoadMoreAction.onAction();
             }
-        } else if (mViewsData != null && holder != null){
+        } else if (mViewsData != null && holder != null && position < mViewsData.size()){
             holder.setData(mViewsData.get(position));
         }
     }
 
     public <T> void add(Class<? extends BaseViewHolder<T>> viewHolder, T data) {
-        if (dismissLoadMore || data == null || viewHolder == null) {
+        if (mIsShowNoMoring || data == null || viewHolder == null) {
             return;
         }
         mViewsData.add(data);
         mViewHolderManager.addViewHolder(viewHolder);
         int viewType = mViewHolderManager.getViewType(viewHolder);
-        mViewHolderManager.putViewType(mViewCount - 1, viewType); //mViewCount从1开始
-        if (mViewCount > 0) {
-            int positionStart = mViewCount - 1;
+
+        int positionStart;
+
+        if (isHasEndStatusView()) {
+            //mViewCount从1开始
+            positionStart = mViewCount - 1;
+        } else {
+            positionStart = mViewCount;
+        }
+        if (positionStart >= 0) {
+            mViewHolderManager.putViewType(positionStart, viewType);
             mViewCount++;
             notifyItemRangeInserted(positionStart, 1);
         }
@@ -102,19 +112,25 @@ public class MultiTypeAdapter extends RecyclerAdapter {
     }
 
     public <T> void addAll(Class<? extends BaseViewHolder<T>> viewHolder, List<T> data) {
-        if (dismissLoadMore || data == null || data.size() == 0) {
+        if (mIsShowNoMoring || data == null || data.size() == 0) {
             return;
         }
         int size = data.size();
         mViewsData.addAll(data);
         mViewHolderManager.addViewHolder(viewHolder);
         int viewType = mViewHolderManager.getViewType(viewHolder);
-        if (mViewCount > 0) {
-            int positionStart = mViewCount - 1;
+
+        int positionStart;
+        if (isHasEndStatusView()) {
+            positionStart = mViewCount - 1;
+        } else {
+            positionStart = mViewCount;
+        }
+        if (positionStart >= 0) {
             for (int i = 0; i < size; i++) {
-                mViewHolderManager.putViewType(mViewCount - 1, viewType); //mViewCount从1开始
-                mViewCount++;
+                mViewHolderManager.putViewType(positionStart + i, viewType);
             }
+            mViewCount += size;
             notifyItemRangeInserted(positionStart, size);
         }
     }
@@ -126,8 +142,8 @@ public class MultiTypeAdapter extends RecyclerAdapter {
             return;
         }
         mViewsData.clear();
-        mViewCount = 1;
-        dismissLoadMore = false;
+        mViewCount = isHasEndStatusView() ? 1 : 0;
+        mIsShowNoMoring = false;
         setViewVisible(mLoadMoreView, false);
         setViewVisible(mNoMoreView, false);
         notifyDataSetChanged();

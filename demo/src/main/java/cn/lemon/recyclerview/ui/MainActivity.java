@@ -136,7 +136,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.multi_adapter) {
-            startActivity(new Intent(this, MultiTypeActivity.class));
+            startActivity(new Intent(this, CustomMultiTypeActivity.class));
             return true;
         }
         return super.onOptionsItemSelected(item);
