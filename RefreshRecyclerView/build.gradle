@@ -28,7 +28,7 @@ ext {
 
     publishedGroupId = 'cn.lemon'
     artifact = 'RefreshRecyclerView'
-    libraryVersion = '1.2.2'
+    libraryVersion = '1.3.0'
 
     siteUrl = 'https://github.com/llxdaxia/RefreshRecyclerView'
     gitUrl = 'https://github.com/llxdaxia/RefreshRecyclerView.git'
