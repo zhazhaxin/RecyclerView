@@ -57,6 +57,7 @@ public class CustomMultiTypeAdapter extends RecyclerAdapter {
         if (!mIsShowNoMoring && mLoadMoreEnable && position == mViewCount - 1) {
             setViewVisible(mLoadMoreView, true);
             if (mLoadMoreAction != null) {
+                log("load more");
                 mLoadMoreAction.onAction();
             }
         } else {
@@ -74,13 +75,16 @@ public class CustomMultiTypeAdapter extends RecyclerAdapter {
         return mViewHolderManager.getViewType(position);
     }
 
+    public void add(int viewType) {
+        add(new Object(), viewType);
+    }
+
     public <T> void add(T data, int viewType) {
         if (mIsShowNoMoring || data == null) {
             return;
         }
         mViewsData.add(data);
         int positionStart;
-
         if (isHasEndStatusView()) {
             positionStart = mViewCount - 1;
         } else {

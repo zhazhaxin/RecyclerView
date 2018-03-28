@@ -3,6 +3,7 @@ package cn.lemon.view.adapter;
 import android.content.Context;
 import android.util.Log;
 import android.view.ViewGroup;
+
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -77,6 +78,7 @@ public class MultiTypeAdapter extends RecyclerAdapter {
         if (!mIsShowNoMoring && mLoadMoreEnable && position == mViewCount - 1) {
             setViewVisible(mLoadMoreView, true);
             if (mLoadMoreAction != null && !mIsShowNoMoring) {
+                log("load more");
                 mLoadMoreAction.onAction();
             }
         } else if (mViewsData != null && holder != null && position < mViewsData.size()){

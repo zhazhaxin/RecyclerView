@@ -3,6 +3,7 @@ package cn.lemon.view.adapter;
 import android.util.Log;
 import android.util.SparseArray;
 import android.util.SparseIntArray;
+
 import java.lang.reflect.ParameterizedType;
 import java.util.HashMap;
 import java.util.Map;
@@ -36,7 +37,8 @@ public class ViewHolderManager {
 
     public void addViewHolder(Class<? extends BaseViewHolder> viewHolder) {
         if (!mHolderToTypeMap.containsKey(viewHolder)) {
-            Class dataClass = (Class) ((ParameterizedType) viewHolder.getGenericSuperclass()).getActualTypeArguments()[0]; //获取ViewHolder的泛型数据class
+            //获取ViewHolder的泛型数据class
+            Class dataClass = (Class) ((ParameterizedType) viewHolder.getGenericSuperclass()).getActualTypeArguments()[0];
             mViewType ++;
             mHolderToTypeMap.put(viewHolder, mViewType);
             mTypeToHolderMap.put(mViewType,viewHolder);

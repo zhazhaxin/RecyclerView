@@ -13,7 +13,7 @@ public class ViewTypeManager {
 
     private final String TAG = "ViewTypeManager";
     // position to Type
-    private SparseIntArray mPositionToTypeMap;  //position --> ViewType
+    private SparseIntArray mPositionToTypeMap;
 
     private IViewHolderFactory mViewHolderFactory;
 

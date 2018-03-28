@@ -24,8 +24,9 @@ import cn.lemon.view.R;
  */
 public abstract class RecyclerAdapter<T> extends RecyclerView.Adapter<BaseViewHolder<T>> {
 
-    private static final String TAG = "RecyclerAdapter";
-    private boolean allowLog = true;  //改成false关闭日志
+    private static final String TAG = RecyclerAdapter.class.getSimpleName();
+    //改成false关闭日志
+    private boolean allowLog = true;
 
     public static final int HEADER_TYPE = 111;
     public static final int FOOTER_TYPE = 222;
@@ -170,6 +171,7 @@ public abstract class RecyclerAdapter<T> extends RecyclerView.Adapter<BaseViewHo
         if (mLoadMoreEnable && !mIsShowNoMoring && position == mViewCount - 2) {
             setViewVisible(mLoadMoreView, true);
             if (mLoadMoreAction != null) {
+                log("load more");
                 mLoadMoreAction.onAction();
             }
         }
