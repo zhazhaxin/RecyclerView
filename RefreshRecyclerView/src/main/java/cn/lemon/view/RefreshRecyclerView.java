@@ -101,8 +101,15 @@ public class RefreshRecyclerView extends FrameLayout implements SwipeRefreshLayo
         if (mAdapter.isShowNoMoring() || !mLoadMoreEnable) {
             return;
         }
-        mAdapter.setIsShowNoMoring(true);
         mAdapter.setLoadMoreAction(action);
+    }
+
+    public void setLoadMoreErrorAction(final Action action) {
+        Log.d(TAG, "setLoadMoreErrorAction");
+        if (mAdapter.isShowNoMoring() || !mLoadMoreEnable) {
+            return;
+        }
+        mAdapter.setLoadMoreErrorAction(action);
     }
 
     public void showNoMore() {
@@ -123,10 +130,6 @@ public class RefreshRecyclerView extends FrameLayout implements SwipeRefreshLayo
 
     public SwipeRefreshLayout getSwipeRefreshLayout() {
         return mSwipeRefreshLayout;
-    }
-
-    public TextView getNoMoreView() {
-        return mAdapter.mNoMoreView;
     }
 
     public void setSwipeRefreshColorsFromRes(@ColorRes int... colors) {

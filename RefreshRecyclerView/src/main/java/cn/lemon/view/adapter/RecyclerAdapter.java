@@ -1,6 +1,7 @@
 package cn.lemon.view.adapter;
 
 import android.content.Context;
+import android.os.Message;
 import android.support.annotation.LayoutRes;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -8,7 +9,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,9 +22,14 @@ import cn.lemon.view.R;
 /**
  * Created by linlongxin on 2015/12/19.
  */
-public abstract class RecyclerAdapter<T> extends RecyclerView.Adapter<BaseViewHolder<T>> {
+public abstract class RecyclerAdapter<T> extends RecyclerView.Adapter<BaseViewHolder<T>> implements IHandler {
 
     private static final String TAG = RecyclerAdapter.class.getSimpleName();
+
+    protected static final int MSG_SHOW_NO_MORE = 1 << 1;
+    protected static final int MSG_SHOW_LOAD_MORE = 1 << 2;
+    protected static final int MSG_SHOW_LOAD_MORE_ERROR = 1 << 3;
+
     //改成false关闭日志
     private boolean allowLog = true;
 
@@ -39,21 +44,28 @@ public abstract class RecyclerAdapter<T> extends RecyclerView.Adapter<BaseViewHo
     // 是否可加载更多
     protected boolean mLoadMoreEnable = false;
     // 是否可显示 no more
-    protected boolean mShowNoMoreEnable = false;
+    protected boolean mNoMoreEnable = false;
+    // 是否正在显示 load more
+    protected boolean mIsLoadMoring = false;
     // 是否正在显示 no more
-    protected boolean mIsShowNoMoring = false;
+    protected boolean mIsNoMoring = false;
 
     protected Action mLoadMoreAction;
+    protected Action mErrorAction;
 
     private List<T> mData = new ArrayList<>();
 
     private View headerView;
     private View footerView;
     protected View mStatusView;
-    protected LinearLayout mLoadMoreView;
-    public TextView mNoMoreView;
+    protected View mLoadMoreLayout;
+    protected View mLoadMoreView;
+    protected TextView mLoadMoreError;
+    protected TextView mNoMoreView;
 
     protected Context mContext;
+
+    private WeakHandler mHandler = new WeakHandler(this);
 
     public void colseLog() {
         allowLog = false;
@@ -75,12 +87,23 @@ public abstract class RecyclerAdapter<T> extends RecyclerView.Adapter<BaseViewHo
     }
 
     private void initEndStatusView() {
-        if (isHasEndStatusView() && mStatusView == null) {
+        if (hasEndStatusView() && mStatusView == null) {
             mStatusView = LayoutInflater.from(getContext()).inflate(R.layout.view_status_last, null);
             mStatusView.setLayoutParams(new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-            mLoadMoreView = (LinearLayout) mStatusView.findViewById(R.id.load_more_view);
+            mLoadMoreLayout = mStatusView.findViewById(R.id.load_more_Layout);
+            mLoadMoreView = mStatusView.findViewById(R.id.load_more_loading);
+            mLoadMoreError = (TextView) mStatusView.findViewById(R.id.load_more_error);
             mNoMoreView = (TextView) mStatusView.findViewById(R.id.no_more_view);
             mViewCount++;
+            mLoadMoreError.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mHandler.sendEmptyMessage(MSG_SHOW_LOAD_MORE);
+                    if (mErrorAction != null) {
+                        mErrorAction.onAction();
+                    }
+                }
+            });
         }
     }
 
@@ -90,16 +113,12 @@ public abstract class RecyclerAdapter<T> extends RecyclerView.Adapter<BaseViewHo
     }
 
     public void setShowNoMoreEnable(boolean b) {
-        mShowNoMoreEnable = b;
+        mNoMoreEnable = b;
         initEndStatusView();
     }
 
     public boolean isShowNoMoring() {
-        return mIsShowNoMoring;
-    }
-
-    public void setIsShowNoMoring(boolean b) {
-        mIsShowNoMoring = b;
+        return mIsNoMoring;
     }
 
     @Override
@@ -128,52 +147,62 @@ public abstract class RecyclerAdapter<T> extends RecyclerView.Adapter<BaseViewHo
             return;
         }
         int dataSize = mData.size();
-        if (position == 0) {
-            // 最先加载 mStatusView 时不需要绑定数据，header 不负责数据加载
-            if (mViewCount == 1 && (isHasEndStatusView() || hasHeader)) {
-                return;
-            } else if (dataSize > 0) {
-                holder.setData(mData.get(0));
+        if (hasEndStatusView()) {
+            if (!hasHeader && !hasFooter && position < dataSize) {
+                //没有Header和Footer
+                holder.setData(mData.get(position));
+            } else if (hasHeader && !hasFooter && position > 0 && position < mViewCount - 1 && position - 1 < dataSize) {
+                //有Header没有Footer
+                holder.setData(mData.get(position - 1));
+            } else if (!hasHeader && position < mViewCount - 2 && position < dataSize) {
+                //没有Header，有Footer
+                holder.setData(mData.get(position));
+            } else if (position > 0 && position < mViewCount - 2 && position - 1 < dataSize) {
+                //Header, Footer 都有
+                holder.setData(mData.get(position - 1));
             }
         } else {
-            if (isHasEndStatusView()) {
-                if (!hasHeader && !hasFooter && position < dataSize) {
-                    //没有Header和Footer
-                    holder.setData(mData.get(position));
-                } else if (hasHeader && !hasFooter && position > 0 && position < mViewCount - 1 && position - 1 < dataSize) {
-                    //有Header没有Footer
-                    holder.setData(mData.get(position - 1));
-                } else if (!hasHeader && position < mViewCount - 2 && position < dataSize) {
-                    //没有Header，有Footer
-                    holder.setData(mData.get(position));
-                } else if (position > 0 && position < mViewCount - 2 && position - 1 < dataSize) {
-                    //Header, Footer 都有
-                    holder.setData(mData.get(position - 1));
-                }
-            } else {
-                if (!hasHeader && !hasFooter && position < dataSize) {
-                    //没有Header和Footer
-                    holder.setData(mData.get(position));
-                } else if (hasHeader && !hasFooter && position > 0 && position < mViewCount && position - 1 < dataSize) {
-                    //有Header没有Footer
-                    holder.setData(mData.get(position - 1));
-                } else if (!hasHeader && position < mViewCount - 1 && position < dataSize) {
-                    //没有Header，有Footer
-                    holder.setData(mData.get(position));
-                } else if (position > 0 && position < mViewCount - 1 && position - 1 < dataSize) {
-                    //Header, Footer 都有
-                    holder.setData(mData.get(position - 1));
-                }
+            if (!hasHeader && !hasFooter && position < dataSize) {
+                //没有Header和Footer
+                holder.setData(mData.get(position));
+            } else if (hasHeader && !hasFooter && position > 0 && position < mViewCount && position - 1 < dataSize) {
+                //有Header没有Footer
+                holder.setData(mData.get(position - 1));
+            } else if (!hasHeader && position < mViewCount - 1 && position < dataSize) {
+                //没有Header，有Footer
+                holder.setData(mData.get(position));
+            } else if (position > 0 && position < mViewCount - 1 && position - 1 < dataSize) {
+                //Header, Footer 都有
+                holder.setData(mData.get(position - 1));
             }
         }
 
         // 最后一个可见的 item 时 加载更多。解决 remove 时 bug
-        if (mLoadMoreEnable && !mIsShowNoMoring && position == mViewCount - 2) {
+        if (mLoadMoreEnable && !mIsNoMoring && !mIsLoadMoring && isValidLoadMore(position)) {
+            mIsLoadMoring = true;
+            setViewVisible(mLoadMoreLayout, true);
             setViewVisible(mLoadMoreView, true);
+            setViewVisible(mLoadMoreError, false);
+            setViewVisible(mNoMoreView, false);
+            log("load more");
             if (mLoadMoreAction != null) {
-                log("load more");
                 mLoadMoreAction.onAction();
             }
+        }
+    }
+
+    /**
+     * load more 当前位置 view 是否有效
+     */
+    protected boolean isValidLoadMore(int position) {
+        if (hasEndStatusView()) {
+            if (hasHeader) {
+                return position != 1 && position == mViewCount - 2 && mViewCount != 2;
+            } else {
+                return position != 0 && position == mViewCount - 1  && mViewCount != 1;
+            }
+        } else {
+            return false;
         }
     }
 
@@ -187,13 +216,13 @@ public abstract class RecyclerAdapter<T> extends RecyclerView.Adapter<BaseViewHo
             return HEADER_TYPE;
         }
         // footer
-        if (hasFooter && isHasEndStatusView() && position == mViewCount - 2) {
+        if (hasFooter && hasEndStatusView() && position == mViewCount - 2) {
             return FOOTER_TYPE;
-        } else if (hasFooter && !isHasEndStatusView() && position == mViewCount - 1) {
+        } else if (hasFooter && !hasEndStatusView() && position == mViewCount - 1) {
             return FOOTER_TYPE;
         }
         // status
-        if (isHasEndStatusView() && position == mViewCount - 1) {
+        if (hasEndStatusView() && position == mViewCount - 1) {
             return STATUS_TYPE;
         }
 
@@ -209,32 +238,27 @@ public abstract class RecyclerAdapter<T> extends RecyclerView.Adapter<BaseViewHo
     }
 
     public void showNoMore() {
-        if (!mShowNoMoreEnable) {
+        if (!mNoMoreEnable) {
             return;
         }
-        mIsShowNoMoring = true;
-        if (mLoadMoreView != null) {
-            mLoadMoreView.post(new Runnable() {
-                @Override
-                public void run() {
-                    setViewVisible(mLoadMoreView, false);
-                    setViewVisible(mNoMoreView, true);
-                }
-            });
+        mIsNoMoring = true;
+        mHandler.sendEmptyMessage(MSG_SHOW_NO_MORE);
+    }
+
+    public void showLoadMoreError() {
+        if (!mLoadMoreEnable) {
+            return;
         }
+        mHandler.sendEmptyMessage(MSG_SHOW_LOAD_MORE_ERROR);
+    }
+
+    public void setLoadMoreErrorAction(Action action) {
+        mErrorAction = action;
     }
 
     public void openLoadMore() {
-        mIsShowNoMoring = false;
-        if (mLoadMoreView != null) {
-            mLoadMoreView.post(new Runnable() {
-                @Override
-                public void run() {
-                    setViewVisible(mLoadMoreView, true);
-                    setViewVisible(mNoMoreView, false);
-                }
-            });
-        }
+        mIsNoMoring = false;
+        mHandler.sendEmptyMessage(MSG_SHOW_LOAD_MORE);
     }
 
     public void setLoadMoreAction(Action action) {
@@ -242,14 +266,15 @@ public abstract class RecyclerAdapter<T> extends RecyclerView.Adapter<BaseViewHo
     }
 
     public void add(T object) {
-        if (!mIsShowNoMoring && object != null) {
+        if (!mIsNoMoring && object != null) {
+            mIsLoadMoring = false;
             mData.add(object);
             int position;
-            if (hasFooter && isHasEndStatusView()) {
+            if (hasFooter && hasEndStatusView()) {
                 position = mViewCount - 2;
-            } else if (hasFooter && !isHasEndStatusView()) {
+            } else if (hasFooter && !hasEndStatusView()) {
                 position = mViewCount - 1;
-            } else if (!hasFooter && isHasEndStatusView()) {
+            } else if (!hasFooter && hasEndStatusView()) {
                 position = mViewCount - 1;
             } else {
                 position = mViewCount;
@@ -260,7 +285,7 @@ public abstract class RecyclerAdapter<T> extends RecyclerView.Adapter<BaseViewHo
     }
 
     public void insert(T object, int itemPosition) {
-        int maxPosition = isHasEndStatusView() ? mViewCount - 2 : mViewCount - 1;
+        int maxPosition = hasEndStatusView() ? mViewCount - 2 : mViewCount - 1;
         if (mData != null && itemPosition < maxPosition && object != null) {
             int dataPosition;
             if (hasHeader) {
@@ -279,14 +304,15 @@ public abstract class RecyclerAdapter<T> extends RecyclerView.Adapter<BaseViewHo
             return;
         }
         int size = data.size();
-        if (!mIsShowNoMoring && size > 0) {
+        if (!mIsNoMoring && size > 0) {
+            mIsLoadMoring = false;
             mData.addAll(data);
             int positionStart;
-            if (hasFooter && isHasEndStatusView()) {
+            if (hasFooter && hasEndStatusView()) {
                 positionStart = mViewCount - 2;
-            } else if (hasFooter && !isHasEndStatusView()) {
+            } else if (hasFooter && !hasEndStatusView()) {
                 positionStart = mViewCount - 1;
-            } else if (!hasFooter && isHasEndStatusView()) {
+            } else if (!hasFooter && hasEndStatusView()) {
                 positionStart = mViewCount - 1;
             } else {
                 positionStart = mViewCount;
@@ -370,15 +396,16 @@ public abstract class RecyclerAdapter<T> extends RecyclerView.Adapter<BaseViewHo
             return;
         }
         mData.clear();
-        mViewCount = isHasEndStatusView() ? 1 : 0;
+        mViewCount = hasEndStatusView() ? 1 : 0;
         if (hasHeader) {
             mViewCount++;
         }
         if (hasFooter) {
             mViewCount++;
         }
-        mIsShowNoMoring = false;
-        setViewVisible(mLoadMoreView, false);
+        mIsNoMoring = false;
+        mIsLoadMoring = false;
+        setViewVisible(mLoadMoreLayout, false);
         setViewVisible(mNoMoreView, false);
         notifyDataSetChanged();
     }
@@ -431,9 +458,9 @@ public abstract class RecyclerAdapter<T> extends RecyclerView.Adapter<BaseViewHo
     public void removeFooter() {
         if (hasFooter) {
             hasFooter = false;
-            if (isHasEndStatusView() && mViewCount > 1) {
+            if (hasEndStatusView() && mViewCount > 1) {
                 notifyItemRemoved(mViewCount - 2);
-            } else if (!isHasEndStatusView() && mViewCount > 0) {
+            } else if (!hasEndStatusView() && mViewCount > 0) {
                 notifyItemRemoved(mViewCount - 1);
             }
         }
@@ -453,13 +480,41 @@ public abstract class RecyclerAdapter<T> extends RecyclerView.Adapter<BaseViewHo
         }
     }
 
-    protected boolean isHasEndStatusView() {
-        return mLoadMoreEnable || mShowNoMoreEnable;
+    protected boolean hasEndStatusView() {
+        return mLoadMoreEnable || mNoMoreEnable;
     }
 
     public void log(String content) {
         if (allowLog) {
             Log.d(TAG, content);
+        }
+    }
+
+    @Override
+    public void handMsg(Message message) {
+        switch (message.what) {
+            case MSG_SHOW_LOAD_MORE_ERROR:
+                // true 阻止 load more 执行
+                mIsLoadMoring = true;
+                setViewVisible(mLoadMoreLayout, true);
+                setViewVisible(mLoadMoreView, false);
+                setViewVisible(mLoadMoreError, true);
+                setViewVisible(mNoMoreView, false);
+                break;
+            case MSG_SHOW_LOAD_MORE:
+                mIsLoadMoring = true;
+                setViewVisible(mLoadMoreLayout, true);
+                setViewVisible(mLoadMoreView, true);
+                setViewVisible(mLoadMoreError, false);
+                setViewVisible(mNoMoreView, false);
+                break;
+            case MSG_SHOW_NO_MORE:
+                mIsLoadMoring = false;
+                setViewVisible(mLoadMoreLayout, false);
+                setViewVisible(mNoMoreView, true);
+                break;
+            default:
+                break;
         }
     }
 }

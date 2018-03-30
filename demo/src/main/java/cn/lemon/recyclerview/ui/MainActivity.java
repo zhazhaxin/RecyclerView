@@ -75,6 +75,14 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        mRecyclerView.setLoadMoreErrorAction(new Action() {
+            @Override
+            public void onAction() {
+                getData(false);
+                page++;
+            }
+        });
+
         mRecyclerView.post(new Runnable() {
             @Override
             public void run() {
@@ -102,9 +110,11 @@ public class MainActivity extends AppCompatActivity {
                     mAdapter.addAll(getVirtualData());
                     mRecyclerView.dismissSwipeRefresh();
                     mRecyclerView.getRecyclerView().scrollToPosition(0);
+                } else if (page == 3) {
+                    mAdapter.showLoadMoreError();
                 } else {
                     mAdapter.addAll(getVirtualData());
-                    if (page >= 3) {
+                    if (page >= 5) {
                         mRecyclerView.showNoMore();
                     }
                 }

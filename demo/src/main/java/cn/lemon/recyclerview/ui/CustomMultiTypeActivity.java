@@ -59,6 +59,12 @@ public class CustomMultiTypeActivity extends AppCompatActivity implements IViewH
                 getData(true);
             }
         });
+        mRecyclerView.setLoadMoreErrorAction(new Action() {
+            @Override
+            public void onAction() {
+                getData(false);
+            }
+        });
 
         FloatingActionButton mFab = (FloatingActionButton) findViewById(R.id.fab);
         mFab.setOnClickListener(new View.OnClickListener() {
@@ -71,9 +77,13 @@ public class CustomMultiTypeActivity extends AppCompatActivity implements IViewH
 
     public void getData(final boolean isRefresh) {
         if (isRefresh) {
-            mPage = 0;
+            mPage = 1;
         } else {
             mPage++;
+        }
+        if (mPage == 3) {
+            mAdapter.showLoadMoreError();
+            return;
         }
         mRecyclerView.postDelayed(new Runnable() {
             @Override
@@ -86,7 +96,7 @@ public class CustomMultiTypeActivity extends AppCompatActivity implements IViewH
                 mAdapter.addAll(getTextVirtualData(), VIEW_TYPE_TEXT);
                 mAdapter.addAll(getTextImageVirualData(), VIEW_TYPE_TEXT_IMAGE);
                 mAdapter.addAll(getRecordVirtualData(), VIEW_TYPE_CARD);
-                if (mPage >= 3) {
+                if (mPage >= 5) {
                     mAdapter.showNoMore();
                 }
                 if(isRefresh){

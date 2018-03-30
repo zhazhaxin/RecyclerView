@@ -50,12 +50,13 @@ public class CustomMultiTypeAdapter extends RecyclerAdapter {
 
     @Override
     public void onBindViewHolder(BaseViewHolder holder, int position) {
-        if (isHasEndStatusView() && position == 0 && mViewCount == 1) {
-            return;
-        }
         // 显示加载更多
-        if (!mIsShowNoMoring && mLoadMoreEnable && position == mViewCount - 1) {
+        if (!mIsNoMoring && mLoadMoreEnable && !mIsLoadMoring && isValidLoadMore(position)) {
+            mIsLoadMoring = true;
+            setViewVisible(mLoadMoreLayout, true);
             setViewVisible(mLoadMoreView, true);
+            setViewVisible(mLoadMoreError, false);
+            setViewVisible(mNoMoreView, false);
             if (mLoadMoreAction != null) {
                 log("load more");
                 mLoadMoreAction.onAction();
@@ -69,7 +70,7 @@ public class CustomMultiTypeAdapter extends RecyclerAdapter {
 
     @Override
     public int getItemViewType(int position) {
-        if (isHasEndStatusView() && position == mViewCount - 1) {
+        if (hasEndStatusView() && position == mViewCount - 1) {
             return STATUS_TYPE;
         }
         return mViewHolderManager.getViewType(position);
@@ -80,12 +81,13 @@ public class CustomMultiTypeAdapter extends RecyclerAdapter {
     }
 
     public <T> void add(T data, int viewType) {
-        if (mIsShowNoMoring || data == null) {
+        if (mIsNoMoring || data == null) {
             return;
         }
+        mIsLoadMoring = false;
         mViewsData.add(data);
         int positionStart;
-        if (isHasEndStatusView()) {
+        if (hasEndStatusView()) {
             positionStart = mViewCount - 1;
         } else {
             positionStart = mViewCount;
@@ -101,13 +103,14 @@ public class CustomMultiTypeAdapter extends RecyclerAdapter {
 
     public <T> void addAll(List<T> data, int viewType) {
 
-        if (mIsShowNoMoring || data == null || data.size() == 0) {
+        if (mIsNoMoring || data == null || data.size() == 0) {
             return;
         }
+        mIsLoadMoring = false;
         int size = data.size();
         mViewsData.addAll(data);
         int positionStart;
-        if (isHasEndStatusView()) {
+        if (hasEndStatusView()) {
             positionStart = mViewCount - 1;
         } else {
             positionStart = mViewCount;
@@ -125,9 +128,10 @@ public class CustomMultiTypeAdapter extends RecyclerAdapter {
             return;
         }
         mViewsData.clear();
-        mViewCount = isHasEndStatusView() ? 1 : 0;
-        mIsShowNoMoring = false;
-        setViewVisible(mLoadMoreView, false);
+        mViewCount = hasEndStatusView() ? 1 : 0;
+        mIsNoMoring = false;
+        mIsLoadMoring = false;
+        setViewVisible(mLoadMoreLayout, false);
         setViewVisible(mNoMoreView, false);
         notifyDataSetChanged();
     }

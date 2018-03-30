@@ -44,6 +44,12 @@ public class MultiTypeActivity extends AppCompatActivity {
                 getData(false);
             }
         });
+        mRecyclerView.setLoadMoreErrorAction(new Action() {
+            @Override
+            public void onAction() {
+                getData(false);
+            }
+        });
         mRecyclerView.post(new Runnable() {
             @Override
             public void run() {
@@ -63,9 +69,13 @@ public class MultiTypeActivity extends AppCompatActivity {
 
     public void getData(final boolean isRefresh) {
         if (isRefresh) {
-            mPage = 0;
+            mPage = 1;
         } else {
             mPage++;
+        }
+        if (mPage == 3) {
+            mAdapter.showLoadMoreError();
+            return;
         }
         mRecyclerView.postDelayed(new Runnable() {
             @Override
@@ -78,7 +88,7 @@ public class MultiTypeActivity extends AppCompatActivity {
                 mAdapter.addAll(TextViewHolder.class, getTextVirtualData());
                 mAdapter.addAll(TextImageViewHolder.class, getTextImageVirualData());
                 mAdapter.addAll(CardRecordHolder.class, getRecordVirtualData());
-                if (mPage >= 3) {
+                if (mPage >= 5) {
                     mAdapter.showNoMore();
                 }
                 if (isRefresh) {
