@@ -196,10 +196,11 @@ public abstract class RecyclerAdapter<T> extends RecyclerView.Adapter<BaseViewHo
      */
     protected boolean isValidLoadMore(int position) {
         if (hasEndStatusView()) {
+            // 倒数第二个 item 就load more ，提前触发。（解决一些极端 case 导致 bug 并提前加载数据，提高加载效率）
             if (hasHeader) {
-                return position != 1 && position == mViewCount - 2 && mViewCount != 2;
+                return position != 1 && position == mViewCount - 3 && mViewCount != 2;
             } else {
-                return position != 0 && position == mViewCount - 1  && mViewCount != 1;
+                return position != 0 && position == mViewCount - 2  && mViewCount != 1;
             }
         } else {
             return false;

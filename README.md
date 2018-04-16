@@ -8,7 +8,7 @@
 - gradle依赖
 
 ```
-   compile 'cn.lemon:RefreshRecyclerView:1.4.0'
+   compile 'cn.lemon:RefreshRecyclerView:1.4.1'
    compile 'com.android.support:recyclerview-v7:25.4.0'
 ```
 
