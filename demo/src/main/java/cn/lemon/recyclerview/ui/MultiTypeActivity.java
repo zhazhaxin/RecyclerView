@@ -32,39 +32,16 @@ public class MultiTypeActivity extends AppCompatActivity {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mAdapter = new MultiTypeAdapter(this);
         mRecyclerView.setAdapter(mAdapter);
-        mRecyclerView.addRefreshAction(new Action() {
-            @Override
-            public void onAction() {
-                getData(true);
-            }
-        });
-        mRecyclerView.setLoadMoreAction(new Action() {
-            @Override
-            public void onAction() {
-                getData(false);
-            }
-        });
-        mRecyclerView.setLoadMoreErrorAction(new Action() {
-            @Override
-            public void onAction() {
-                getData(false);
-            }
-        });
-        mRecyclerView.post(new Runnable() {
-            @Override
-            public void run() {
-                mRecyclerView.showSwipeRefresh();
-                getData(true);
-            }
+        mRecyclerView.addRefreshAction(() -> getData(true));
+        mRecyclerView.addLoadMoreAction(() -> getData(false));
+        mRecyclerView.addLoadMoreErrorAction(() -> getData(false));
+        mRecyclerView.post(() -> {
+            mRecyclerView.showSwipeRefresh();
+            getData(true);
         });
 
         FloatingActionButton mFab = (FloatingActionButton) findViewById(R.id.fab);
-        mFab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mAdapter.add(ImageViewHolder.class, getImageVirtualData());
-            }
-        });
+        mFab.setOnClickListener(v -> mAdapter.add(ImageViewHolder.class, getImageVirtualData()));
     }
 
     public void getData(final boolean isRefresh) {
@@ -77,23 +54,20 @@ public class MultiTypeActivity extends AppCompatActivity {
             mAdapter.showLoadMoreError();
             return;
         }
-        mRecyclerView.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if (isRefresh) {
-                    mAdapter.clear();
-                    mRecyclerView.dismissSwipeRefresh();
-                }
-                mAdapter.add(ImageViewHolder.class, getImageVirtualData());
-                mAdapter.addAll(TextViewHolder.class, getTextVirtualData());
-                mAdapter.addAll(TextImageViewHolder.class, getTextImageVirualData());
-                mAdapter.addAll(CardRecordHolder.class, getRecordVirtualData());
-                if (mPage >= 5) {
-                    mAdapter.showNoMore();
-                }
-                if (isRefresh) {
-                    mRecyclerView.getRecyclerView().scrollToPosition(0);
-                }
+        mRecyclerView.postDelayed(() -> {
+            if (isRefresh) {
+                mAdapter.clear();
+                mRecyclerView.dismissSwipeRefresh();
+            }
+            mAdapter.add(ImageViewHolder.class, getImageVirtualData());
+            mAdapter.addAll(TextViewHolder.class, getTextVirtualData());
+            mAdapter.addAll(TextImageViewHolder.class, getTextImageVirualData());
+            mAdapter.addAll(CardRecordHolder.class, getRecordVirtualData());
+            if (mPage >= 5) {
+                mAdapter.showNoMore();
+            }
+            if (isRefresh) {
+                mRecyclerView.getRecyclerView().scrollToPosition(0);
             }
         }, 1000);
     }

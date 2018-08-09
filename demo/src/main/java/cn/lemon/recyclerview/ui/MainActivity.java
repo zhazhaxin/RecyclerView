@@ -11,7 +11,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
@@ -19,7 +18,6 @@ import cn.alien95.util.Utils;
 import cn.lemon.recyclerview.R;
 import cn.lemon.recyclerview.ui.bean.Consumption;
 import cn.lemon.view.RefreshRecyclerView;
-import cn.lemon.view.adapter.Action;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -60,63 +58,41 @@ public class MainActivity extends AppCompatActivity {
         mRecyclerView.setSwipeRefreshColors(0xFF437845, 0xFFE44F98, 0xFF2FAC21);
         mRecyclerView.setLayoutManager(new GridLayoutManager(this,2));
         mRecyclerView.setAdapter(mAdapter);
-        mRecyclerView.addRefreshAction(new Action() {
-            @Override
-            public void onAction() {
-                getData(true);
-            }
+        mRecyclerView.addRefreshAction(() -> getData(true));
+
+        mRecyclerView.addLoadMoreAction(() -> {
+            getData(false);
+            page++;
         });
 
-        mRecyclerView.setLoadMoreAction(new Action() {
-            @Override
-            public void onAction() {
-                getData(false);
-                page++;
-            }
+        mRecyclerView.addLoadMoreErrorAction(() -> {
+            getData(false);
+            page++;
         });
 
-        mRecyclerView.setLoadMoreErrorAction(new Action() {
-            @Override
-            public void onAction() {
-                getData(false);
-                page++;
-            }
+        mRecyclerView.post(() -> {
+            mRecyclerView.showSwipeRefresh();
+            getData(true);
         });
 
-        mRecyclerView.post(new Runnable() {
-            @Override
-            public void run() {
-                mRecyclerView.showSwipeRefresh();
-                getData(true);
-            }
-        });
-
-        mFab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mAdapter.remove(1);
-            }
-        });
+        mFab.setOnClickListener(v -> mAdapter.remove(1));
 
     }
 
     public void getData(final boolean isRefresh) {
-        mHandler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if (isRefresh) {
-                    page = 1;
-                    mAdapter.clear();
-                    mAdapter.addAll(getVirtualData());
-                    mRecyclerView.dismissSwipeRefresh();
-                    mRecyclerView.getRecyclerView().scrollToPosition(0);
-                } else if (page == 3) {
-                    mAdapter.showLoadMoreError();
-                } else {
-                    mAdapter.addAll(getVirtualData());
-                    if (page >= 5) {
-                        mRecyclerView.showNoMore();
-                    }
+        mHandler.postDelayed(() -> {
+            if (isRefresh) {
+                page = 1;
+                mAdapter.clear();
+                mAdapter.addAll(getVirtualData());
+                mRecyclerView.dismissSwipeRefresh();
+                mRecyclerView.getRecyclerView().scrollToPosition(0);
+            } else if (page == 3) {
+                mAdapter.showLoadMoreError();
+            } else {
+                mAdapter.addAll(getVirtualData());
+                if (page >= 5) {
+                    mRecyclerView.showNoMore();
                 }
             }
         }, 1500);

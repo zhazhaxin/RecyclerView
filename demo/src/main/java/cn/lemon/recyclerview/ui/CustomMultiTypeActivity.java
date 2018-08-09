@@ -40,39 +40,16 @@ public class CustomMultiTypeActivity extends AppCompatActivity implements IViewH
         mAdapter = new CustomMultiTypeAdapter(this);
         mAdapter.setViewHolderFactory(this);
         mRecyclerView.setAdapter(mAdapter);
-        mRecyclerView.addRefreshAction(new Action() {
-            @Override
-            public void onAction() {
-                getData(true);
-            }
+        mRecyclerView.addRefreshAction(() -> getData(true));
+        mRecyclerView.addLoadMoreAction(() -> getData(false));
+        mRecyclerView.post(() -> {
+            mRecyclerView.showSwipeRefresh();
+            getData(true);
         });
-        mRecyclerView.setLoadMoreAction(new Action() {
-            @Override
-            public void onAction() {
-                getData(false);
-            }
-        });
-        mRecyclerView.post(new Runnable() {
-            @Override
-            public void run() {
-                mRecyclerView.showSwipeRefresh();
-                getData(true);
-            }
-        });
-        mRecyclerView.setLoadMoreErrorAction(new Action() {
-            @Override
-            public void onAction() {
-                getData(false);
-            }
-        });
+        mRecyclerView.addLoadMoreErrorAction(() -> getData(false));
 
         FloatingActionButton mFab = (FloatingActionButton) findViewById(R.id.fab);
-        mFab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mAdapter.add(getImageVirtualData(), VIEW_TYPE_IAMGE);
-            }
-        });
+        mFab.setOnClickListener(v -> mAdapter.add(getImageVirtualData(), VIEW_TYPE_IAMGE));
     }
 
     public void getData(final boolean isRefresh) {

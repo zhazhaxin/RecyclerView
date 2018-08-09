@@ -17,6 +17,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import cn.lemon.view.R;
+import cn.lemon.view.util.LogUtils;
 
 
 /**
@@ -26,21 +27,18 @@ public abstract class RecyclerAdapter<T> extends RecyclerView.Adapter<BaseViewHo
 
     private static final String TAG = RecyclerAdapter.class.getSimpleName();
 
-    protected static final int MSG_SHOW_NO_MORE = 1 << 1;
-    protected static final int MSG_SHOW_LOAD_MORE = 1 << 2;
-    protected static final int MSG_SHOW_LOAD_MORE_ERROR = 1 << 3;
-
-    //改成false关闭日志
-    private boolean allowLog = true;
+    private static final int MSG_SHOW_NO_MORE = 1 << 1;
+    private static final int MSG_SHOW_LOAD_MORE = 1 << 2;
+    private static final int MSG_SHOW_LOAD_MORE_ERROR = 1 << 3;
 
     public static final int HEADER_TYPE = 111;
     public static final int FOOTER_TYPE = 222;
     public static final int STATUS_TYPE = 333;
-    int mViewCount = 0;
+
+    protected int mViewCount = 0;
 
     private boolean hasHeader = false;
     private boolean hasFooter = false;
-
     // 是否可加载更多
     protected boolean mLoadMoreEnable = false;
     // 是否可显示 no more
@@ -50,26 +48,22 @@ public abstract class RecyclerAdapter<T> extends RecyclerView.Adapter<BaseViewHo
     // 是否正在显示 no more
     protected boolean mIsNoMoring = false;
 
-    protected Action mLoadMoreAction;
-    protected Action mErrorAction;
+    protected List<Action> mLoadMoreActions = new ArrayList<>();
+    protected List<Action> mErrorActions = new ArrayList<>();
 
-    private List<T> mData = new ArrayList<>();
+    protected List<T> mData = new ArrayList<>();
 
     private View headerView;
     private View footerView;
+    private View mLoadMoreLayout;
+    private View mLoadMoreView;
+    private TextView mLoadMoreError;
+    private TextView mNoMoreView;
     protected View mStatusView;
-    protected View mLoadMoreLayout;
-    protected View mLoadMoreView;
-    protected TextView mLoadMoreError;
-    protected TextView mNoMoreView;
 
-    protected Context mContext;
+    private Context mContext;
 
     private WeakHandler mHandler = new WeakHandler(this);
-
-    public void colseLog() {
-        allowLog = false;
-    }
 
     public RecyclerAdapter(Context context) {
         mContext = context;
@@ -99,8 +93,8 @@ public abstract class RecyclerAdapter<T> extends RecyclerView.Adapter<BaseViewHo
                 @Override
                 public void onClick(View v) {
                     mHandler.sendEmptyMessage(MSG_SHOW_LOAD_MORE);
-                    if (mErrorAction != null) {
-                        mErrorAction.onAction();
+                    for (Action action : mErrorActions) {
+                        action.onAction();
                     }
                 }
             });
@@ -136,10 +130,6 @@ public abstract class RecyclerAdapter<T> extends RecyclerView.Adapter<BaseViewHo
 
     public abstract BaseViewHolder<T> onCreateBaseViewHolder(ViewGroup parent, int viewType);
 
-    /* ViewHolder 绑定数据，这里的 position 和 getItemViewType() 方法的 position 不一样
-        这里的 position 指当前可见的 item 的 position 的位置。
-        注意 ：每个 ViewHolder 绑定数据时值调用此方法一次
-     */
     @Override
     public void onBindViewHolder(BaseViewHolder<T> holder, int position) {
         log("onBindViewHolder()  viewCount : " + mViewCount + " position : " + position);
@@ -179,15 +169,19 @@ public abstract class RecyclerAdapter<T> extends RecyclerView.Adapter<BaseViewHo
 
         // 最后一个可见的 item 时 加载更多。解决 remove 时 bug
         if (mLoadMoreEnable && !mIsNoMoring && !mIsLoadMoring && isValidLoadMore(position)) {
-            mIsLoadMoring = true;
-            setViewVisible(mLoadMoreLayout, true);
-            setViewVisible(mLoadMoreView, true);
-            setViewVisible(mLoadMoreError, false);
-            setViewVisible(mNoMoreView, false);
-            log("load more");
-            if (mLoadMoreAction != null) {
-                mLoadMoreAction.onAction();
-            }
+            performLoadMore();
+        }
+    }
+
+    protected void performLoadMore(){
+        log("load more");
+        mIsLoadMoring = true;
+        setViewVisible(mLoadMoreLayout, true);
+        setViewVisible(mLoadMoreView, true);
+        setViewVisible(mLoadMoreError, false);
+        setViewVisible(mNoMoreView, false);
+        for (Action action : mLoadMoreActions) {
+            action.onAction();
         }
     }
 
@@ -198,9 +192,9 @@ public abstract class RecyclerAdapter<T> extends RecyclerView.Adapter<BaseViewHo
         if (hasEndStatusView()) {
             // 倒数第二个 item 就load more ，提前触发。（解决一些极端 case 导致 bug 并提前加载数据，提高加载效率）
             if (hasHeader) {
-                return position != 1 && position == mViewCount - 3 && mViewCount != 2;
+                return position > 1 && position == mViewCount - 3 && mViewCount != 2;
             } else {
-                return position != 0 && position == mViewCount - 2  && mViewCount != 1;
+                return position > 0 && position == mViewCount - 2  && mViewCount != 1;
             }
         } else {
             return false;
@@ -208,7 +202,7 @@ public abstract class RecyclerAdapter<T> extends RecyclerView.Adapter<BaseViewHo
     }
 
     /**
-     * ViewHolder 更新 Item 的位置选择 ViewType , 和 UI 是同步的
+     * ViewHolder 根据 Item 的位置选择 ViewType
      */
     @Override
     public int getItemViewType(int position) {
@@ -253,8 +247,11 @@ public abstract class RecyclerAdapter<T> extends RecyclerView.Adapter<BaseViewHo
         mHandler.sendEmptyMessage(MSG_SHOW_LOAD_MORE_ERROR);
     }
 
-    public void setLoadMoreErrorAction(Action action) {
-        mErrorAction = action;
+    public void addLoadMoreErrorAction(Action action) {
+        if (action == null){
+            return;
+        }
+        mErrorActions.add(action);
     }
 
     public void openLoadMore() {
@@ -262,8 +259,11 @@ public abstract class RecyclerAdapter<T> extends RecyclerView.Adapter<BaseViewHo
         mHandler.sendEmptyMessage(MSG_SHOW_LOAD_MORE);
     }
 
-    public void setLoadMoreAction(Action action) {
-        mLoadMoreAction = action;
+    public void addLoadMoreAction(Action action) {
+        if (action == null){
+            return;
+        }
+        mLoadMoreActions.add(action);
     }
 
     public void add(T object) {
@@ -347,8 +347,7 @@ public abstract class RecyclerAdapter<T> extends RecyclerView.Adapter<BaseViewHo
     //position start with 0
     public void remove(T object) {
         if (object != null && !mData.contains(object)) {
-            Toast.makeText(getContext(), "删除失败", Toast.LENGTH_SHORT).show();
-            log("remove()  without the object : " + object.getClass().getName());
+            log("without the object : " + object.getClass().getName());
             return;
         }
         int dataPosition = mData.indexOf(object);
@@ -374,7 +373,7 @@ public abstract class RecyclerAdapter<T> extends RecyclerView.Adapter<BaseViewHo
                 notifyItemRemoved(itemPosition);
                 mViewCount--;
             } else if (dataPosition >= dataSize) {
-                Toast.makeText(getContext(), "删除失败", Toast.LENGTH_SHORT).show();
+                throw new IllegalArgumentException("itemPosition is greater than data size");
             } else {
                 throw new IndexOutOfBoundsException("RecyclerView has header,position is should more than 0 ." +
                         "if you want remove header , pleasure user removeHeader()");
@@ -382,7 +381,7 @@ public abstract class RecyclerAdapter<T> extends RecyclerView.Adapter<BaseViewHo
         } else {
             dataPosition = itemPosition;
             if (dataPosition >= dataSize) {
-                Toast.makeText(getContext(), "删除失败", Toast.LENGTH_SHORT).show();
+                throw new IllegalArgumentException("itemPosition is greater than data size");
             } else {
                 mData.remove(dataPosition);
                 notifyItemRemoved(itemPosition);
@@ -392,10 +391,6 @@ public abstract class RecyclerAdapter<T> extends RecyclerView.Adapter<BaseViewHo
     }
 
     public void clear() {
-        if (mData == null) {
-            log("clear() mData is null");
-            return;
-        }
         mData.clear();
         mViewCount = hasEndStatusView() ? 1 : 0;
         if (hasHeader) {
@@ -412,9 +407,7 @@ public abstract class RecyclerAdapter<T> extends RecyclerView.Adapter<BaseViewHo
     }
 
     /**
-     * header 不负责数据加载。。。。也就是不会掉用 onBindViewHolder
-     *
-     * @param header
+     * header 不负责数据加载，不会调用 onBindViewHolder
      */
     public void setHeader(View header) {
         hasHeader = true;
@@ -485,12 +478,6 @@ public abstract class RecyclerAdapter<T> extends RecyclerView.Adapter<BaseViewHo
         return mLoadMoreEnable || mNoMoreEnable;
     }
 
-    public void log(String content) {
-        if (allowLog) {
-            Log.d(TAG, content);
-        }
-    }
-
     @Override
     public void handMsg(Message message) {
         switch (message.what) {
@@ -517,5 +504,9 @@ public abstract class RecyclerAdapter<T> extends RecyclerView.Adapter<BaseViewHo
             default:
                 break;
         }
+    }
+
+    protected void log(String content) {
+        LogUtils.log(TAG, content);
     }
 }

@@ -11,11 +11,12 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
-import android.widget.TextView;
+
 import java.util.ArrayList;
 import java.util.List;
 import cn.lemon.view.adapter.Action;
 import cn.lemon.view.adapter.RecyclerAdapter;
+import cn.lemon.view.util.LogUtils;
 
 
 /**
@@ -27,7 +28,7 @@ public class RefreshRecyclerView extends FrameLayout implements SwipeRefreshLayo
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private RecyclerView mRecyclerView;
     private RecyclerAdapter mAdapter;
-    private List<Action> mRefreshActions;
+    private List<Action> mRefreshActions = new ArrayList<>();
     private boolean mLoadMoreEnable;
     private boolean mShowNoMoreEnable;
 
@@ -69,50 +70,56 @@ public class RefreshRecyclerView extends FrameLayout implements SwipeRefreshLayo
 
     public void setLayoutManager(final RecyclerView.LayoutManager layoutManager) {
         mRecyclerView.setLayoutManager(layoutManager);
-        if (layoutManager instanceof GridLayoutManager) {
-            ((GridLayoutManager) layoutManager).setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
-                @Override
-                public int getSpanSize(int position) {
-                    int type = mAdapter.getItemViewType(position);
-                    if (type == RecyclerAdapter.HEADER_TYPE
-                            || type == RecyclerAdapter.FOOTER_TYPE
-                            || type == RecyclerAdapter.STATUS_TYPE) {
-                        return ((GridLayoutManager) layoutManager).getSpanCount();
-                    } else {
-                        return 1;
-                    }
-                }
-            });
+        if (!(layoutManager instanceof GridLayoutManager)) {
+            return;
         }
+        ((GridLayoutManager) layoutManager).setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+            @Override
+            public int getSpanSize(int position) {
+                int type = mAdapter.getItemViewType(position);
+                if (type == RecyclerAdapter.HEADER_TYPE
+                        || type == RecyclerAdapter.FOOTER_TYPE
+                        || type == RecyclerAdapter.STATUS_TYPE) {
+                    return ((GridLayoutManager) layoutManager).getSpanCount();
+                } else {
+                    return 1;
+                }
+            }
+        });
     }
 
     public void addRefreshAction(final Action action) {
         if (action == null) {
             return;
         }
-        if (mRefreshActions == null) {
-            mRefreshActions = new ArrayList<>();
-        }
         mRefreshActions.add(action);
     }
 
-    public void setLoadMoreAction(final Action action) {
-        Log.d(TAG, "setLoadMoreAction");
+    public void addLoadMoreAction(final Action action) {
+        if (mAdapter == null) {
+            throw new NullPointerException("must call setAdapter before");
+        }
         if (mAdapter.isShowNoMoring() || !mLoadMoreEnable) {
             return;
         }
-        mAdapter.setLoadMoreAction(action);
+        mAdapter.addLoadMoreAction(action);
     }
 
-    public void setLoadMoreErrorAction(final Action action) {
-        Log.d(TAG, "setLoadMoreErrorAction");
+    public void addLoadMoreErrorAction(final Action action) {
+        if (mAdapter == null) {
+            throw new NullPointerException("must call setAdapter before");
+        }
         if (mAdapter.isShowNoMoring() || !mLoadMoreEnable) {
             return;
         }
-        mAdapter.setLoadMoreErrorAction(action);
+        mAdapter.addLoadMoreErrorAction(action);
     }
 
     public void showNoMore() {
+        log("showNoMore");
+        if (mAdapter == null) {
+            throw new NullPointerException("must call setAdapter before");
+        }
         mAdapter.showNoMore();
     }
 
@@ -156,5 +163,13 @@ public class RefreshRecyclerView extends FrameLayout implements SwipeRefreshLayo
         for (Action a : mRefreshActions) {
             a.onAction();
         }
+    }
+
+    public void setDebug(boolean b) {
+        LogUtils.setLogEnale(b);
+    }
+
+    protected void log(String content) {
+        LogUtils.log(TAG, content);
     }
 }

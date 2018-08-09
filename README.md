@@ -11,7 +11,7 @@
 - gradle依赖
 
 ```
-   compile 'cn.lemon:RefreshRecyclerView:1.4.1'
+   compile 'cn.lemon:RefreshRecyclerView:2.0.0'
    compile 'com.android.support:recyclerview-v7:25.4.0'
 ```
 
@@ -40,13 +40,13 @@ mRecyclerView.addRefreshAction(new Action() {
     }
 });
 
-mRecyclerView.setLoadMoreAction(new Action() {
+mRecyclerView.addLoadMoreAction(new Action() {
     @Override
     public void onAction() {
         // TODO：加载更多
     }
 });
-mRecyclerView.setLoadMoreErrorAction(new Action() {
+mRecyclerView.addLoadMoreErrorAction(new Action() {
    @Override
    public void onAction() {
        // TODO：加载更多错误，点击重新加载
@@ -159,5 +159,4 @@ class CardRecordHolder extends BaseViewHolder<Consumption> {
 
 [详细用法请看Demo](https://github.com/llxdaxia/RecyclerView/tree/master/demo)
 
-<img src="screenshot/RecyclerAdapter.png" width="270" height="480"/>
-<img src="screenshot/MultiTypeAdapter.png" width="270" height="480"/>
+<img src="screenshot/RecyclerAdapter.png" width="270" height="480"/> <img src="screenshot/MultiTypeAdapter.png" width="270" height="480"/>
